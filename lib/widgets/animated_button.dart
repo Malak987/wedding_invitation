@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import '../dashboard/colors.dart';
-import '../theme/text_styles.dart';
-import '../core/constants.dart';
+import '../services/config_manager.dart';
 
-/// Generic pill button with a hover/press scale effect.
-/// Used as the base for InviteButton and other CTAs.
 class AnimatedButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
@@ -31,7 +27,9 @@ class _AnimatedButtonState extends State<AnimatedButton> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = _pressed ? 0.96 : (_hovering ? 1.04 : 1.0);
+    final manager = AppConfigManager.instance;
+    final primary = manager.primaryColor;
+    final scale = _pressed ? 0.95 : (_hovering ? 1.05 : 1.0);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -44,17 +42,17 @@ class _AnimatedButtonState extends State<AnimatedButton> {
         onTap: widget.onPressed,
         child: AnimatedScale(
           scale: scale,
-          duration: AppConstants.animFast,
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
           child: AnimatedContainer(
-            duration: AppConstants.animFast,
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
             decoration: BoxDecoration(
-              color: widget.backgroundColor ?? AppColorsData.buttonColor,
-              borderRadius: BorderRadius.circular(AppConstants.borderRadiusLarge),
+              color: widget.backgroundColor ?? primary,
+              borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: AppColorsData.shadow,
+                  color: (widget.backgroundColor ?? primary).withOpacity(_hovering ? 0.45 : 0.25),
                   blurRadius: _hovering ? 20 : 10,
                   offset: const Offset(0, 6),
                 ),
@@ -64,13 +62,16 @@ class _AnimatedButtonState extends State<AnimatedButton> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.icon != null) ...[
-                  Icon(widget.icon, size: 18, color: widget.textColor ?? AppColorsData.buttonTextColor),
+                  Icon(widget.icon, size: 18, color: widget.textColor ?? Colors.white),
                   const SizedBox(width: 8),
                 ],
                 Text(
                   widget.label,
-                  style: AppTextStyles.buttonText.copyWith(
-                    color: widget.textColor ?? AppColorsData.buttonTextColor,
+                  style: TextStyle(
+                    fontFamily: manager.bodyFont,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: widget.textColor ?? Colors.white,
                   ),
                 ),
               ],

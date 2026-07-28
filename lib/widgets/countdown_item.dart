@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/text_styles.dart';
+import '../services/config_manager.dart';
 import 'glass_card.dart';
 
-/// Displays a single countdown number (e.g. days) + label.
-/// Kept as its own widget so only this piece rebuilds when its
-/// [value] changes, not the whole countdown row.
 class CountdownItemWidget extends StatelessWidget {
   final int value;
   final String label;
@@ -13,17 +10,37 @@ class CountdownItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final primary = manager.primaryColor;
+
     return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             value.toString().padLeft(2, '0'),
-            style: AppTextStyles.countdownNumber,
+            style: TextStyle(
+              fontFamily: manager.headingFont,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: primary,
+              shadows: [
+                Shadow(color: primary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 3)),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(label, style: AppTextStyles.countdownLabel),
+          const SizedBox(height: 6),
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontFamily: manager.bodyFont,
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: manager.secondaryColor.withOpacity(0.8),
+              letterSpacing: 1,
+            ),
+          ),
         ],
       ),
     );

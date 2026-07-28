@@ -1,10 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../dashboard/colors.dart';
-import '../core/constants.dart';
+import '../services/config_manager.dart';
 
-/// Frosted-glass container used for countdown items, schedule cards,
-/// gift card, etc. Stateless & const-friendly for performance.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -15,12 +12,15 @@ class GlassCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(20),
-    this.borderRadius = AppConstants.borderRadiusMedium,
-    this.blur = AppConstants.blurSigma,
+    this.borderRadius = 20,
+    this.blur = 16,
   });
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final primary = manager.primaryColor;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
@@ -28,9 +28,16 @@ class GlassCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: AppColorsData.glassFill,
+            color: Colors.white.withOpacity(0.45),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: AppColorsData.glassBorder, width: 1.2),
+            border: Border.all(color: primary.withOpacity(0.25), width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: child,
         ),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../dashboard/invitation_data.dart';
-import '../dashboard/links.dart';
-import '../dashboard/colors.dart';
+import '../services/config_manager.dart';
+import '../core/localization.dart';
 import '../core/responsive.dart';
-import '../theme/text_styles.dart';
 import '../utils/launch_url.dart';
 import '../widgets/social_button.dart';
 
@@ -12,29 +10,47 @@ class FooterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final lang = manager.selectedLanguage;
+    final textOnDark = Colors.white;
+
     return Container(
       width: double.infinity,
-      color: AppColorsData.backgroundDark,
-      padding: EdgeInsets.symmetric(
-        horizontal: Responsive.horizontalPadding(context),
-        vertical: 32,
+      color: Colors.black, // Sleek black base
+      padding: const EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 40,
       ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SocialButton(icon: Icons.camera_alt_outlined, onTap: () => launchAppUrl(AppLinks.instagram)),
-              const SizedBox(width: 14),
-              SocialButton(icon: Icons.facebook_outlined, onTap: () => launchAppUrl(AppLinks.facebook)),
-              const SizedBox(width: 14),
-              SocialButton(icon: Icons.chat_bubble_outline, onTap: () => launchAppUrl(AppLinks.whatsapp)),
+              SocialButton(
+                icon: Icons.camera_alt_outlined,
+                onTap: () => launchAppUrl(manager.instagramUrl),
+              ),
+              const SizedBox(width: 16),
+              SocialButton(
+                icon: Icons.facebook_outlined,
+                onTap: () => launchAppUrl(manager.facebookUrl),
+              ),
+              const SizedBox(width: 16),
+              SocialButton(
+                icon: Icons.chat_bubble_outline_sharp,
+                onTap: () => launchAppUrl('https://wa.me/${manager.whatsappNumber}'),
+              ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           Text(
-            InvitationData.footerText,
-            style: AppTextStyles.body.copyWith(color: AppColorsData.textOnDark.withOpacity(0.7)),
+            Localization.get(lang, 'footer_text'),
+            style: TextStyle(
+              fontFamily: manager.bodyFont,
+              fontSize: 13,
+              fontWeight: FontWeight.w300,
+              color: textOnDark.withOpacity(0.6),
+            ),
             textAlign: TextAlign.center,
           ),
         ],

@@ -1,11 +1,11 @@
 {
-    "name": "wedding_invitation",
-    "short_name": "wedding_invitation",
+    "name": "Ahmed & Sarah Wedding Invitation",
+    "short_name": "Wedding Invitation",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFF9F3",
+    "theme_color": "#C9A66B",
+    "description": "Luxurious Digital Wedding Invitation for Ahmed & Sarah.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../dashboard/colors.dart';
-import '../core/constants.dart';
+import '../services/config_manager.dart';
 
 class PhotoCard extends StatelessWidget {
   final String imagePath;
@@ -10,26 +9,34 @@ class PhotoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final primary = manager.primaryColor;
+
     return Container(
       padding: EdgeInsets.all(borderWidth),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: AppColorsData.shadow, blurRadius: 24, offset: const Offset(0, 12)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          ),
         ],
+        border: Border.all(color: primary.withOpacity(0.12), width: 1),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppConstants.borderRadiusMedium - borderWidth),
+        borderRadius: BorderRadius.circular(20 - borderWidth),
         child: AspectRatio(
           aspectRatio: 4 / 5,
           child: Image.asset(
             imagePath,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) => Container(
-              color: Colors.grey.shade200,
+              color: Colors.grey.shade100,
               alignment: Alignment.center,
-              child: const Icon(Icons.favorite_border, color: Colors.grey, size: 40),
+              child: Icon(Icons.favorite_border_sharp, color: primary, size: 40),
             ),
           ),
         ),

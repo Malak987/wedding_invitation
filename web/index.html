@@ -1,46 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  
+  <!-- SEO Optimization -->
+  <title>Ahmed &amp; Sarah's Wedding Invitation | دعوة زفاف أحمد وسارة</title>
+  <meta name="description" content="We are delighted to invite you to celebrate the wedding of Ahmed and Sarah. Join us for a magical evening of love, laughter, and happiness. | يسعدنا دعوتكم لمشاركتنا فرحتنا بحفل زفاف أحمد وسارة. نتشرف بحضوركم لمشاركتنا أجمل لحظات العمر.">
+  <meta name="keywords" content="wedding invitation, digital invitation, premium wedding web, أحمد وسارة, دعوة زفاف, دعوة إلكترونية">
+  <meta name="author" content="Ahmed &amp; Sarah">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ahmed &amp; Sarah's Wedding Invitation | دعوة زفاف أحمد وسارة">
+  <meta property="og:description" content="Join us in celebrating our union. Explore our love story, event details, RSVP, and photo gallery online.">
+  <meta property="og:image" content="assets/images/1.jpg">
+  <meta property="og:url" content="https://wedding.invitation">
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="wedding_invitation">
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ahmed &amp; Sarah's Wedding Invitation | دعوة زفاف أحمد وسارة">
+  <meta name="twitter:description" content="Join us in celebrating our union. Explore our love story, event details, RSVP, and photo gallery online.">
+  <meta name="twitter:image" content="assets/images/1.jpg">
+
+  <!-- Apple web app meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Wedding Invitation">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
+  <!-- Google Fonts - Luxury Typography Collection -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Alexandria:wght@300;400;600;700&family=Tajawal:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <title>wedding_invitation</title>
   <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- Structured Data (Schema.org JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Ahmed & Sarah's Wedding",
+    "startDate": "2026-12-12T19:00:00+02:00",
+    "endDate": "2026-12-13T00:00:00+02:00",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+      "@type": "Place",
+      "name": "Royal Celebration Hall | قاعة الأفراح الملكية",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cairo, Egypt",
+        "addressLocality": "Cairo",
+        "addressRegion": "Cairo",
+        "addressCountry": "EG"
+      }
+    },
+    "image": [
+      "assets/images/1.jpg"
+    ],
+    "description": "The digital wedding invitation of Ahmed & Sarah. Celebrated on December 12, 2026.",
+    "performer": {
+      "@type": "Person",
+      "name": "Ahmed & Sarah"
+    }
+  }
+  </script>
+</head>
+<body style="background-color: #FFF9F3; margin: 0; padding: 0;">
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

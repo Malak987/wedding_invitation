@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../dashboard/colors.dart';
-import '../theme/text_styles.dart';
+import '../services/config_manager.dart';
 import '../models/schedule_item.dart';
 
 class ScheduleCard extends StatelessWidget {
@@ -11,6 +10,10 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final primary = manager.primaryColor;
+    final secondary = manager.secondaryColor;
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,29 +24,48 @@ class ScheduleCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColorsData.accent,
+                  color: primary.withOpacity(0.12),
                   shape: BoxShape.circle,
+                  border: Border.all(color: primary, width: 1),
                 ),
                 alignment: Alignment.center,
-                child: Icon(item.icon, size: 20, color: AppColorsData.secondary),
+                child: Icon(item.icon, size: 20, color: secondary),
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(width: 2, color: AppColorsData.divider),
+                  child: Container(
+                    width: 1.5,
+                    color: primary.withOpacity(0.3),
+                  ),
                 ),
             ],
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 28),
+              padding: const EdgeInsets.only(bottom: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.time, style: AppTextStyles.body.copyWith(
-                      color: AppColorsData.primary, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 4),
-                  Text(item.title, style: AppTextStyles.body),
+                  Text(
+                    item.time,
+                    style: TextStyle(
+                      fontFamily: manager.bodyFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: primary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.title,
+                    style: TextStyle(
+                      fontFamily: manager.bodyFont,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black87,
+                    ),
+                  ),
                 ],
               ),
             ),

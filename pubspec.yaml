@@ -12,6 +12,8 @@ dependencies:
   url_launcher: ^6.3.1     # open WhatsApp / Maps / Instagram links
   audioplayers: ^6.1.0     # background music player
   cupertino_icons: ^1.0.8
+  video_player: ^2.13.0
+
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +42,4 @@ flutter:
     - assets/images/icons/
     - assets/images/backgrounds/
     - assets/music/
+    - assets/images/video/

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../dashboard/colors.dart';
-import '../dashboard/strings.dart';
-import '../theme/text_styles.dart';
+import '../services/config_manager.dart';
+import '../core/localization.dart';
 import 'glass_card.dart';
 import 'animated_button.dart';
 
@@ -23,21 +22,50 @@ class LocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final lang = manager.selectedLanguage;
+    final primary = manager.primaryColor;
+    final secondary = manager.secondaryColor;
+
     return GlassCard(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(32),
       child: Column(
         children: [
-          Icon(Icons.location_on_outlined, color: AppColorsData.primary, size: 36),
-          const SizedBox(height: 12),
-          Text(venueName, style: AppTextStyles.sectionSubtitle.copyWith(
-              fontWeight: FontWeight.w700, color: AppColorsData.textPrimary)),
-          const SizedBox(height: 6),
-          Text(address, style: AppTextStyles.body, textAlign: TextAlign.center),
-          const SizedBox(height: 6),
-          Text('$dateText — $timeText', style: AppTextStyles.body),
-          const SizedBox(height: 20),
+          Icon(Icons.location_on_outlined, color: primary, size: 40),
+          const SizedBox(height: 16),
+          Text(
+            venueName,
+            style: TextStyle(
+              fontFamily: manager.headingFont,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: secondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            address,
+            style: TextStyle(
+              fontFamily: manager.bodyFont,
+              fontSize: 14,
+              color: Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$dateText — $timeText',
+            style: TextStyle(
+              fontFamily: manager.bodyFont,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 28),
           AnimatedButton(
-            label: AppStrings.btnGetDirections,
+            label: Localization.get(lang, 'btn_directions'),
             icon: Icons.directions_outlined,
             onPressed: onGetDirections,
           ),

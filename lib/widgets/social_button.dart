@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../dashboard/colors.dart';
-import '../core/constants.dart';
+import '../services/config_manager.dart';
 
 class SocialButton extends StatefulWidget {
   final IconData icon;
@@ -17,6 +16,10 @@ class _SocialButtonState extends State<SocialButton> {
 
   @override
   Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final primary = manager.primaryColor;
+    final secondary = manager.secondaryColor;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovering = true),
@@ -24,17 +27,18 @@ class _SocialButtonState extends State<SocialButton> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: AppConstants.animFast,
-          width: 46,
-          height: 46,
+          duration: const Duration(milliseconds: 200),
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _hovering ? AppColorsData.primary : AppColorsData.accent,
+            color: _hovering ? primary : primary.withOpacity(0.12),
+            border: Border.all(color: primary, width: 1),
           ),
           child: Icon(
             widget.icon,
             size: 20,
-            color: _hovering ? Colors.white : AppColorsData.secondary,
+            color: _hovering ? Colors.white : secondary,
           ),
         ),
       ),

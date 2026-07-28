@@ -12,7 +12,7 @@ class AppMusic {
   /// web, which the browser reports as "Format error / MEDIA_ELEMENT_ERROR").
   /// Also avoid spaces/special characters in the file name — rename to
   /// something like 'background_music.mp3' to prevent web URL issues.
-  static const String trackAsset = 'music/background_music.mp3';
+  static const String trackAsset = 'assets/music/wedding_music.mp3';
 
   static const bool autoPlay = true;
   static const bool loop = true;
