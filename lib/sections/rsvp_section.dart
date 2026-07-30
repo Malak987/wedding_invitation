@@ -20,7 +20,6 @@ class _RsvpSectionState extends State<RsvpSection> {
   final _messageController = TextEditingController();
 
   bool _isAttending = true;
-  int _guestCount = 1;
   bool _isLoading = false;
   bool _isSubmitted = false;
 
@@ -38,14 +37,13 @@ class _RsvpSectionState extends State<RsvpSection> {
       _isLoading = true;
     });
 
-    // Simulate luxury API response / local state save
-    await Future.delayed(const Duration(seconds: 1500));
+    // Brief, elegant loading pause before confirming locally
+    await Future.delayed(const Duration(milliseconds: 900));
 
     final manager = AppConfigManager.instance;
     manager.addRsvp(
       name: _nameController.text.trim(),
       attending: _isAttending,
-      guests: _isAttending ? _guestCount : 0,
       message: _messageController.text.trim(),
     );
 
@@ -62,7 +60,6 @@ class _RsvpSectionState extends State<RsvpSection> {
       _nameController.clear();
       _messageController.clear();
       _isAttending = true;
-      _guestCount = 1;
       _isSubmitted = false;
     });
   }
@@ -204,47 +201,6 @@ class _RsvpSectionState extends State<RsvpSection> {
             ),
             const SizedBox(height: 24),
 
-            // Number of Guests Dropdown (only visible if attending)
-            if (_isAttending) ...[
-              Text(
-                Localization.get(lang, 'rsvp_guests'),
-                style: TextStyle(
-                  fontFamily: manager.bodyFont,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: secondary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: primary.withOpacity(0.3), width: 1),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<int>(
-                    value: _guestCount,
-                    style: TextStyle(fontFamily: manager.bodyFont, color: Colors.black87, fontSize: 14),
-                    icon: Icon(Icons.arrow_drop_down, color: primary),
-                    isExpanded: true,
-                    onChanged: (val) {
-                      if (val != null) setState(() => _guestCount = val);
-                    },
-                    items: List.generate(5, (index) {
-                      final count = index + 1;
-                      return DropdownMenuItem<int>(
-                        value: count,
-                        child: Text('$count'),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-            ],
-
             // Congratulatory Message / Special note
             Text(
               Localization.get(lang, 'rsvp_message'),
@@ -279,7 +235,20 @@ class _RsvpSectionState extends State<RsvpSection> {
             // Submit Button
             _isLoading
                 ? Center(
-                    child: CircularProgressIndicator(color: primary),
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(color: primary),
+                        const SizedBox(height: 12),
+                        Text(
+                          Localization.get(lang, 'rsvp_submitting'),
+                          style: TextStyle(
+                            fontFamily: manager.bodyFont,
+                            fontSize: 13,
+                            color: secondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 : MouseRegion(
                     cursor: SystemMouseCursors.click,

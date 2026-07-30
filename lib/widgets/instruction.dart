@@ -41,13 +41,13 @@ class _InstructionWidgetState extends State<InstructionWidget> with SingleTicker
       children: [
         // Luxury Arabic Instruction text
         Text(
-          "المس الختم لفتح الدعوة",
+          "اكسر الختم",
           style: TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: goldColor.withOpacity(0.75),
-            letterSpacing: 1.0,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: goldColor.withOpacity(0.85),
+            letterSpacing: 2.0,
             shadows: [
               Shadow(
                 color: Colors.black.withOpacity(0.1),

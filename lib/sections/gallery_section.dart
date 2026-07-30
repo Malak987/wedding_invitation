@@ -15,14 +15,10 @@ class GallerySection extends StatefulWidget {
 }
 
 class _GallerySectionState extends State<GallerySection> {
-  // We use standard existing asset files
+  // The couple's own two real photos, shown standalone (no slider here)
   final List<String> _galleryImages = [
-    'assets/images/4.png',
-    'assets/images/5.png',
-    'assets/images/6.png',
-    'assets/images/7.png',
-    'assets/images/8.png',
-    'assets/images/9.png',
+    'assets/images/story_young.png',
+    'assets/images/story_now.jpg',
   ];
 
   void _openLightbox(int initialIndex) {
@@ -44,7 +40,9 @@ class _GallerySectionState extends State<GallerySection> {
   Widget build(BuildContext context) {
     final manager = AppConfigManager.instance;
     final lang = manager.selectedLanguage;
-    final columns = Responsive.value<int>(context, mobile: 2, tablet: 3, desktop: 3);
+    final columns = _galleryImages.length < 3
+        ? _galleryImages.length
+        : Responsive.value<int>(context, mobile: 2, tablet: 3, desktop: 3);
 
     return Container(
       color: manager.accentColor,
@@ -63,7 +61,7 @@ class _GallerySectionState extends State<GallerySection> {
             children: [
               SectionTitle(
                 title: Localization.get(lang, 'nav_gallery'),
-                subtitle: Localization.get(lang, 'welcome_subtitle'),
+                subtitle: Localization.get(lang, 'gallery_subtitle'),
               ),
               const SizedBox(height: 48),
               GridView.builder(

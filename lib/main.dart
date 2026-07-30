@@ -10,8 +10,6 @@ import 'sections/countdown_section.dart';
 import 'sections/gallery_section.dart';
 import 'sections/location_section.dart';
 import 'sections/schedule_section.dart';
-import 'sections/gift_section.dart';
-import 'sections/rsvp_section.dart';
 import 'sections/thank_you_section.dart';
 import 'sections/footer_section.dart';
 import 'sections/music_player.dart';
@@ -78,7 +76,7 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
   final GlobalKey _countdownKey = GlobalKey();
   final GlobalKey _galleryKey = GlobalKey();
   final GlobalKey _venueKey = GlobalKey();
-  final GlobalKey _rsvpKey = GlobalKey();
+  final GlobalKey _scheduleKey = GlobalKey();
 
   bool _showLanding = true;
   bool _isTransitioning = false;
@@ -111,11 +109,11 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
     }
   }
 
-  void _scrollToRsvp() => _scrollToSection(_rsvpKey);
   void _scrollToStory() => _scrollToSection(_storyKey);
   void _scrollToCountdown() => _scrollToSection(_countdownKey);
   void _scrollToGallery() => _scrollToSection(_galleryKey);
   void _scrollToVenue() => _scrollToSection(_venueKey);
+  void _scrollToSchedule() => _scrollToSection(_scheduleKey);
 
   @override
   void dispose() {
@@ -143,7 +141,7 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
-                        HeroSection(onScrollToRsvp: _scrollToRsvp),
+                        HeroSection(onScrollToVenue: _scrollToVenue),
                         if (manager.showStory)
                           KeyedSubtree(key: _storyKey, child: const StorySection()),
                         if (manager.showCountdown)
@@ -153,10 +151,8 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                         const GuestGallerySection(),
                         if (manager.showLocation)
                           KeyedSubtree(key: _venueKey, child: const LocationSection()),
-                        if (manager.showSchedule) const ScheduleSection(),
-                        if (manager.showGift) const GiftSection(),
-                        if (manager.showRsvp)
-                          KeyedSubtree(key: _rsvpKey, child: const RsvpSection()),
+                        if (manager.showSchedule)
+                          KeyedSubtree(key: _scheduleKey, child: const ScheduleSection()),
                         const ThankYouSection(),
                         const FooterSection(),
                       ],
@@ -176,7 +172,7 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                       onScrollToCountdown: _scrollToCountdown,
                       onScrollToGallery: _scrollToGallery,
                       onScrollToVenue: _scrollToVenue,
-                      onScrollToRsvp: _scrollToRsvp,
+                      onScrollToSchedule: _scrollToSchedule,
                     ),
                   ),
                 ),
@@ -189,6 +185,7 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
               if (_showLanding)
                 Positioned.fill(
                   child: LandingScreen(
+                    key: const ValueKey('landing_screen'),
                     onCompleted: () async {
                       // 1. Instantly trigger white glow cover
                       setState(() {

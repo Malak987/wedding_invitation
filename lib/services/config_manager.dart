@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../core/extensions.dart';
 
 /// A robust local-storage-backed state manager that holds all
-/// editable configurations of the Wedding Invitation. It supports
-/// dynamic theme color changing, real-time RSVP database, custom typography,
-/// toggling sections, saving state across refreshes, and instant localized updates.
+/// editable configurations of the Engagement Invitation. It supports
+/// dynamic theme color changing, custom typography, toggling sections,
+/// saving state across refreshes, and instant localized updates.
 class AppConfigManager extends ChangeNotifier {
   // Static instance for simple globally shared access
   static AppConfigManager? _instance;
@@ -14,16 +14,16 @@ class AppConfigManager extends ChangeNotifier {
   }
 
   // Fallback defaults
-  String _brideName = 'سارة';
-  String _groomName = 'أحمد';
-  String _weddingDate = '2026-12-12';
-  String _weddingTime = '7:00 مساءً';
-  String _weddingDay = 'السبت';
+  String _brideName = 'ميرنا';
+  String _groomName = 'سيف';
+  String _eventDate = '2026-08-22';
+  String _eventTime = '7:00 مساءً';
+  String _eventDay = 'السبت';
   String _venueName = 'قاعة الأفراح الملكية';
   String _venueAddress = 'القاهرة، مصر';
   String _storyText = 'بدأت قصتنا بلقاء بسيط تحول إلى حب حقيقي، وها نحن اليوم نبدأ فصلاً جديداً من حياتنا معاً، بإذن الله.';
-  String _countdownTarget = '2026-12-12T19:00:00';
-  String _googleMapsUrl = 'https://maps.google.com/?q=Cairo';
+  String _countdownTarget = '2026-08-22T19:00:00';
+  String _googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=26.569541148546833,31.70995890878019';
   String _phoneNumber = '+201000000000';
   String _whatsappNumber = '+201000000000';
   String _instagramUrl = 'https://instagram.com';
@@ -44,8 +44,6 @@ class AppConfigManager extends ChangeNotifier {
   bool _showGallery = true;
   bool _showLocation = true;
   bool _showSchedule = true;
-  bool _showGift = true;
-  bool _showRsvp = true;
   bool _showMusic = true;
 
   // Music Settings
@@ -57,16 +55,50 @@ class AppConfigManager extends ChangeNotifier {
   String _selectedLanguage = 'ar';
   bool _isOpened = false;
 
-  // Real-time RSVPs
-  List<Map<String, dynamic>> _rsvps = [];
-
   // Getters
   String get brideName => _brideName;
   String get groomName => _groomName;
   String get coupleNames => _selectedLanguage == 'ar' ? '$_groomName & $_brideName' : '$_groomName & $_brideName';
-  String get weddingDate => _weddingDate;
-  String get weddingTime => _weddingTime;
-  String get weddingDay => _weddingDay;
+  String get eventDate => _eventDate;
+  String get eventTime => _eventTime;
+  String get eventDay => _eventDay;
+
+  static const List<String> _monthsEn = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+
+  /// A natural-reading, human formatted date (e.g. "12 ديسمبر 2026"
+  /// instead of the raw ISO string "2026-12-12"), which prevents the
+  /// awkward mixed-direction look ISO dates get inside Arabic RTL text.
+  String get eventDateReadable {
+    try {
+      final parsed = DateTime.parse(_eventDate);
+      if (_selectedLanguage == 'ar') {
+        return parsed.toReadableDate();
+      }
+      return '${parsed.day} ${_monthsEn[parsed.month - 1]} ${parsed.year}';
+    } catch (_) {
+      return _eventDate;
+    }
+  }
+
+  /// A full, naturally-ordered Arabic/English sentence combining the
+  /// weekday and the readable date, e.g. "السبت الموافق 12 ديسمبر 2026".
+  String get eventDateLine {
+    if (_selectedLanguage == 'ar') {
+      return '$_eventDay الموافق $eventDateReadable';
+    }
+    return '$_eventDay, $eventDateReadable';
+  }
+
+  /// The time prefixed naturally, e.g. "الساعة 7:00 مساءً".
+  String get eventTimeLine {
+    if (_selectedLanguage == 'ar') {
+      return 'الساعة $_eventTime';
+    }
+    return 'at $_eventTime';
+  }
   String get venueName => _venueName;
   String get venueAddress => _venueAddress;
   String get storyText => _storyText;
@@ -89,8 +121,6 @@ class AppConfigManager extends ChangeNotifier {
   bool get showGallery => _showGallery;
   bool get showLocation => _showLocation;
   bool get showSchedule => _showSchedule;
-  bool get showGift => _showGift;
-  bool get showRsvp => _showRsvp;
   bool get showMusic => _showMusic;
 
   double get musicVolume => _musicVolume;
@@ -99,7 +129,6 @@ class AppConfigManager extends ChangeNotifier {
 
   String get selectedLanguage => _selectedLanguage;
   bool get isOpened => _isOpened;
-  List<Map<String, dynamic>> get rsvps => _rsvps;
 
   // TextDirection helper
   TextDirection get textDirection => _selectedLanguage == 'ar' ? TextDirection.rtl : TextDirection.ltr;
@@ -117,9 +146,9 @@ class AppConfigManager extends ChangeNotifier {
       if (storage != null) {
         _brideName = storage['brideName'] ?? _brideName;
         _groomName = storage['groomName'] ?? _groomName;
-        _weddingDate = storage['weddingDate'] ?? _weddingDate;
-        _weddingTime = storage['weddingTime'] ?? _weddingTime;
-        _weddingDay = storage['weddingDay'] ?? _weddingDay;
+        _eventDate = storage['eventDate'] ?? _eventDate;
+        _eventTime = storage['eventTime'] ?? _eventTime;
+        _eventDay = storage['eventDay'] ?? _eventDay;
         _venueName = storage['venueName'] ?? _venueName;
         _venueAddress = storage['venueAddress'] ?? _venueAddress;
         _storyText = storage['storyText'] ?? _storyText;
@@ -142,8 +171,6 @@ class AppConfigManager extends ChangeNotifier {
         _showGallery = (storage['showGallery'] ?? 'true') == 'true';
         _showLocation = (storage['showLocation'] ?? 'true') == 'true';
         _showSchedule = (storage['showSchedule'] ?? 'true') == 'true';
-        _showGift = (storage['showGift'] ?? 'true') == 'true';
-        _showRsvp = (storage['showRsvp'] ?? 'true') == 'true';
         _showMusic = (storage['showMusic'] ?? 'true') == 'true';
 
         _musicVolume = double.tryParse(storage['musicVolume'] ?? '') ?? _musicVolume;
@@ -153,15 +180,6 @@ class AppConfigManager extends ChangeNotifier {
         _selectedLanguage = storage['selectedLanguage'] ?? _selectedLanguage;
         _isOpened = (storage['isOpened'] ?? 'false') == 'true';
 
-        final rsvpsJson = storage['rsvps'];
-        if (rsvpsJson != null) {
-          try {
-            final List<dynamic> decoded = jsonDecode(rsvpsJson);
-            _rsvps = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
-          } catch (e) {
-            debugPrint('Error decoding RSVPs: $e');
-          }
-        }
       }
     } catch (e) {
       debugPrint('LocalStorage is not available: $e');
@@ -175,9 +193,9 @@ class AppConfigManager extends ChangeNotifier {
       if (storage != null) {
         storage['brideName'] = _brideName;
         storage['groomName'] = _groomName;
-        storage['weddingDate'] = _weddingDate;
-        storage['weddingTime'] = _weddingTime;
-        storage['weddingDay'] = _weddingDay;
+        storage['eventDate'] = _eventDate;
+        storage['eventTime'] = _eventTime;
+        storage['eventDay'] = _eventDay;
         storage['venueName'] = _venueName;
         storage['venueAddress'] = _venueAddress;
         storage['storyText'] = _storyText;
@@ -200,8 +218,6 @@ class AppConfigManager extends ChangeNotifier {
         storage['showGallery'] = _showGallery.toString();
         storage['showLocation'] = _showLocation.toString();
         storage['showSchedule'] = _showSchedule.toString();
-        storage['showGift'] = _showGift.toString();
-        storage['showRsvp'] = _showRsvp.toString();
         storage['showMusic'] = _showMusic.toString();
 
         storage['musicVolume'] = _musicVolume.toString();
@@ -210,7 +226,6 @@ class AppConfigManager extends ChangeNotifier {
 
         storage['selectedLanguage'] = _selectedLanguage;
         storage['isOpened'] = _isOpened.toString();
-        storage['rsvps'] = jsonEncode(_rsvps);
       }
     } catch (e) {
       debugPrint('Error saving to LocalStorage: $e');
@@ -222,9 +237,9 @@ class AppConfigManager extends ChangeNotifier {
   void updateConfig({
     String? brideName,
     String? groomName,
-    String? weddingDate,
-    String? weddingTime,
-    String? weddingDay,
+    String? eventDate,
+    String? eventTime,
+    String? eventDay,
     String? venueName,
     String? venueAddress,
     String? storyText,
@@ -244,8 +259,6 @@ class AppConfigManager extends ChangeNotifier {
     bool? showGallery,
     bool? showLocation,
     bool? showSchedule,
-    bool? showGift,
-    bool? showRsvp,
     bool? showMusic,
     double? musicVolume,
     bool? musicMuted,
@@ -253,9 +266,9 @@ class AppConfigManager extends ChangeNotifier {
   }) {
     if (brideName != null) _brideName = brideName;
     if (groomName != null) _groomName = groomName;
-    if (weddingDate != null) _weddingDate = weddingDate;
-    if (weddingTime != null) _weddingTime = weddingTime;
-    if (weddingDay != null) _weddingDay = weddingDay;
+    if (eventDate != null) _eventDate = eventDate;
+    if (eventTime != null) _eventTime = eventTime;
+    if (eventDay != null) _eventDay = eventDay;
     if (venueName != null) _venueName = venueName;
     if (venueAddress != null) _venueAddress = venueAddress;
     if (storyText != null) _storyText = storyText;
@@ -278,8 +291,6 @@ class AppConfigManager extends ChangeNotifier {
     if (showGallery != null) _showGallery = showGallery;
     if (showLocation != null) _showLocation = showLocation;
     if (showSchedule != null) _showSchedule = showSchedule;
-    if (showGift != null) _showGift = showGift;
-    if (showRsvp != null) _showRsvp = showRsvp;
     if (showMusic != null) _showMusic = showMusic;
 
     if (musicVolume != null) _musicVolume = musicVolume;
@@ -306,24 +317,6 @@ class AppConfigManager extends ChangeNotifier {
   void resetInvitation() {
     _isOpened = false;
     _musicPlayingStateSaved = false;
-    _rsvps.clear();
-    saveToLocalStorage();
-  }
-
-  /// Save a new RSVP in our database
-  void addRsvp({
-    required String name,
-    required bool attending,
-    required int guests,
-    required String message,
-  }) {
-    _rsvps.insert(0, {
-      'name': name,
-      'attending': attending,
-      'guests': guests,
-      'message': message,
-      'timestamp': DateTime.now().toIso8601String(),
-    });
     saveToLocalStorage();
   }
 

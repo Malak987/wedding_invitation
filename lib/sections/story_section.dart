@@ -4,9 +4,7 @@ import '../core/localization.dart';
 import '../core/responsive.dart';
 import '../core/constants.dart';
 import '../widgets/section_title.dart';
-import '../widgets/photo_card.dart';
 import '../animations/fade_in.dart';
-import '../animations/slide_in.dart';
 
 class StorySection extends StatelessWidget {
   const StorySection({super.key});
@@ -17,9 +15,9 @@ class StorySection extends StatelessWidget {
     final lang = manager.selectedLanguage;
     final isDesktop = Responsive.isDesktop(context);
 
-    // Standard high-quality imagery from existing asset index
-    const String coupleImg1 = 'assets/images/2.jpg';
-    const String coupleImg2 = 'assets/images/3.jpg';
+    // The couple's own photos: as kids, and as they are today.
+    const String youngImg = 'assets/images/story_young.png';
+    const String nowImg = 'assets/images/story_now.jpg';
 
     final textColumn = FadeIn(
       child: Column(
@@ -59,24 +57,33 @@ class StorySection extends StatelessWidget {
       ),
     );
 
-    final photosRow = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-          child: SlideIn(
-            direction: SlideDirection.left,
-            child: const PhotoCard(imagePath: coupleImg1),
+    final sliderColumn = FadeIn(
+      child: Column(
+        children: [
+          _BeforeAfterSlider(
+            youngImage: youngImg,
+            nowImage: nowImg,
+            accentColor: manager.primaryColor,
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: SlideIn(
-            direction: SlideDirection.right,
-            delay: const Duration(milliseconds: 150),
-            child: const PhotoCard(imagePath: coupleImg2),
+          const SizedBox(height: 14),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.swipe_outlined, size: 16, color: manager.primaryColor.withOpacity(0.8)),
+              const SizedBox(width: 6),
+              Text(
+                Localization.get(lang, 'story_hint'),
+                style: TextStyle(
+                  fontFamily: manager.bodyFont,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
 
     return Container(
@@ -96,14 +103,14 @@ class StorySection extends StatelessWidget {
             children: [
               SectionTitle(
                 title: Localization.get(lang, 'story_title'),
-                subtitle: Localization.get(lang, 'welcome_subtitle'),
+                subtitle: Localization.get(lang, 'story_subtitle'),
               ),
               const SizedBox(height: 48),
               if (isDesktop)
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(child: photosRow),
+                    Expanded(child: sliderColumn),
                     const SizedBox(width: 64),
                     Expanded(child: textColumn),
                   ],
@@ -111,7 +118,7 @@ class StorySection extends StatelessWidget {
               else
                 Column(
                   children: [
-                    photosRow,
+                    sliderColumn,
                     const SizedBox(height: 36),
                     textColumn,
                   ],
@@ -122,4 +129,166 @@ class StorySection extends StatelessWidget {
       ),
     );
   }
+}
+
+/// An interactive "then & now" reveal: drag (or tap) the handle in the
+/// middle — dragging right reveals more of the couple's childhood photo,
+/// dragging left reveals more of them today.
+class _BeforeAfterSlider extends StatefulWidget {
+  final String youngImage;
+  final String nowImage;
+  final Color accentColor;
+
+  const _BeforeAfterSlider({
+    required this.youngImage,
+    required this.nowImage,
+    required this.accentColor,
+  });
+
+  @override
+  State<_BeforeAfterSlider> createState() => _BeforeAfterSliderState();
+}
+
+class _BeforeAfterSliderState extends State<_BeforeAfterSlider> {
+  double _ratio = 0.5;
+
+  void _updateRatio(double dx, double width) {
+    setState(() {
+      _ratio = (dx / width).clamp(0.0, 1.0);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final height = constraints.maxHeight;
+
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 24,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragUpdate: (details) => _updateRatio(details.localPosition.dx, width),
+                onTapDown: (details) => _updateRatio(details.localPosition.dx, width),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Bottom layer: the couple today — always fully visible
+                    Image.asset(
+                      widget.nowImage,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade300),
+                    ),
+
+                    // Top layer: childhood photo, clipped from the left up to the handle
+                    ClipRect(
+                      clipper: _LeftClipper(_ratio),
+                      child: Image.asset(
+                        widget.youngImage,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade400),
+                      ),
+                    ),
+
+                    // Divider line
+                    Positioned(
+                      left: (_ratio * width) - 1,
+                      top: 0,
+                      bottom: 0,
+                      child: Container(width: 2, color: Colors.white.withOpacity(0.95)),
+                    ),
+
+                    // Drag handle
+                    Positioned(
+                      left: (_ratio * width) - 22,
+                      top: (height / 2) - 22,
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 10, offset: const Offset(0, 3)),
+                          ],
+                        ),
+                        child: Icon(Icons.compare_arrows_rounded, color: widget.accentColor, size: 22),
+                      ),
+                    ),
+
+                    // "Then" badge
+                    Positioned(
+                      bottom: 12,
+                      left: 12,
+                      child: _Badge(text: 'زمان', color: widget.accentColor),
+                    ),
+
+                    // "Now" badge
+                    Positioned(
+                      bottom: 12,
+                      right: 12,
+                      child: _Badge(text: 'دلوقتي', color: widget.accentColor),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final String text;
+  final Color color;
+  const _Badge({required this.text, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.55),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.7), width: 1),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+/// Clips its child to only the left portion of the available width, up to
+/// [ratio] (0..1) of the total width.
+class _LeftClipper extends CustomClipper<Rect> {
+  final double ratio;
+  _LeftClipper(this.ratio);
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTWH(0, 0, size.width * ratio, size.height);
+
+  @override
+  bool shouldReclip(covariant _LeftClipper oldClipper) => oldClipper.ratio != ratio;
 }

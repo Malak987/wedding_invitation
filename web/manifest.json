@@ -1,11 +1,11 @@
 {
-    "name": "Ahmed & Sarah Wedding Invitation",
-    "short_name": "Wedding Invitation",
+    "name": "سيف و ميرنا - دعوة خطوبة",
+    "short_name": "دعوة خطوبة",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFF9F3",
     "theme_color": "#C9A66B",
-    "description": "Luxurious Digital Wedding Invitation for Ahmed & Sarah.",
+    "description": "الدعوة الرقمية لحفل خطوبة سيف وميرنا.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

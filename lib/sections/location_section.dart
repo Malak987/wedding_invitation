@@ -21,8 +21,8 @@ class LocationSection extends StatelessWidget {
       child: LocationCard(
         venueName: manager.venueName,
         address: manager.venueAddress,
-        dateText: manager.weddingDate,
-        timeText: manager.weddingTime,
+        dateText: manager.eventDateReadable,
+        timeText: manager.eventTimeLine,
         onGetDirections: () => launchAppUrl(manager.googleMapsUrl),
       ),
     );
@@ -122,7 +122,7 @@ class LocationSection extends StatelessWidget {
             children: [
               SectionTitle(
                 title: Localization.get(lang, 'location_title'),
-                subtitle: '${manager.weddingDay} • ${manager.weddingDate}',
+                subtitle: manager.eventDateLine,
               ),
               const SizedBox(height: 48),
               if (isDesktop)

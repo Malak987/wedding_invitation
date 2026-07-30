@@ -3,6 +3,7 @@ import '../services/config_manager.dart';
 import '../core/localization.dart';
 import '../core/responsive.dart';
 import '../core/constants.dart';
+import '../utils/launch_url.dart';
 import '../widgets/custom_divider.dart';
 import '../animations/fade_in.dart';
 
@@ -54,6 +55,36 @@ class ThankYouSection extends StatelessWidget {
                   height: 1.7,
                 ),
                 textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 32),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => launchAppUrl(manager.facebookUrl),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: manager.primaryColor, width: 1.4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.facebook_outlined, color: manager.primaryColor, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        Localization.get(lang, 'facebook_follow'),
+                        style: TextStyle(
+                          fontFamily: manager.bodyFont,
+                          color: textOnDark,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

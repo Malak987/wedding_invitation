@@ -14,18 +14,14 @@ class ScheduleSection extends StatelessWidget {
   List<ScheduleItem> _getLocalizedSchedule(String langCode) {
     if (langCode == 'en') {
       return [
-        const ScheduleItem(time: '6:30 PM', title: 'Guest Reception', icon: Icons.local_florist_outlined),
-        const ScheduleItem(time: '7:00 PM', title: 'Grand Entrance', icon: Icons.favorite_border),
-        const ScheduleItem(time: '8:00 PM', title: 'Celebration Dinner', icon: Icons.restaurant_outlined),
-        const ScheduleItem(time: '9:30 PM', title: 'Cake Cutting Ceremony', icon: Icons.cake_outlined),
+        const ScheduleItem(time: '7:00 PM', title: 'Engagement Begins', icon: Icons.favorite_border),
+        const ScheduleItem(time: '12:00 AM', title: 'End of the Celebration', icon: Icons.nightlight_round),
       ];
     }
     // Arabic
     return [
-      const ScheduleItem(time: '6:30 م', title: 'استقبال الضيوف', icon: Icons.local_florist_outlined),
-      const ScheduleItem(time: '7:00 م', title: 'دخول العروسين', icon: Icons.favorite_border),
-      const ScheduleItem(time: '8:00 م', title: 'مأدبة العشاء', icon: Icons.restaurant_outlined),
-      const ScheduleItem(time: '9:30 م', title: 'قطع الكعكة الحفل', icon: Icons.cake_outlined),
+      const ScheduleItem(time: '7:00 م', title: 'بداية حفل الخطوبة', icon: Icons.favorite_border),
+      const ScheduleItem(time: '12:00 ص', title: 'ختام السهرة', icon: Icons.nightlight_round),
     ];
   }
 
@@ -52,7 +48,7 @@ class ScheduleSection extends StatelessWidget {
             children: [
               SectionTitle(
                 title: Localization.get(lang, 'schedule_title'),
-                subtitle: Localization.get(lang, 'welcome_subtitle'),
+                subtitle: Localization.get(lang, 'schedule_subtitle'),
               ),
               const SizedBox(height: 48),
               ConstrainedBox(

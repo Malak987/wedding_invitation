@@ -55,6 +55,7 @@ class ScheduleCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: primary,
                     ),
+                    textDirection: TextDirection.ltr,
                   ),
                   const SizedBox(height: 6),
                   Text(

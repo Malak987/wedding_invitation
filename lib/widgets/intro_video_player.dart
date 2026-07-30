@@ -210,7 +210,7 @@ class _IntroVideoPlayerState extends State<IntroVideoPlayer> with SingleTickerPr
                                   Icon(Icons.favorite_sharp, color: goldColor, size: 28),
                                   const SizedBox(height: 12),
                                   Text(
-                                    "Wedding Invitation",
+                                    "دعوة خطوبة",
                                     style: TextStyle(
                                       fontFamily: 'Playfair',
                                       fontSize: 16,

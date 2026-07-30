@@ -78,7 +78,7 @@ class _CountdownSectionState extends State<CountdownSection> {
         children: [
           SectionTitle(
             title: Localization.get(lang, 'countdown_title'),
-            subtitle: '${manager.weddingDay} • ${manager.weddingDate}',
+            subtitle: manager.eventDateLine,
           ),
           const SizedBox(height: 40),
           FadeIn(
@@ -116,28 +116,31 @@ class _CountdownSectionState extends State<CountdownSection> {
                         );
                       }
 
-                      return Wrap(
-                        spacing: 16,
-                        runSpacing: 16,
-                        alignment: WrapAlignment.center,
-                        children: [
-                          CountdownItemWidget(
-                            value: value.days,
-                            label: Localization.get(lang, 'countdown_days'),
-                          ),
-                          CountdownItemWidget(
-                            value: value.hours,
-                            label: Localization.get(lang, 'countdown_hours'),
-                          ),
-                          CountdownItemWidget(
-                            value: value.minutes,
-                            label: Localization.get(lang, 'countdown_minutes'),
-                          ),
-                          CountdownItemWidget(
-                            value: value.seconds,
-                            label: Localization.get(lang, 'countdown_seconds'),
-                          ),
-                        ],
+                      return Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Wrap(
+                          spacing: 16,
+                          runSpacing: 16,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            CountdownItemWidget(
+                              value: value.days,
+                              label: Localization.get(lang, 'countdown_days'),
+                            ),
+                            CountdownItemWidget(
+                              value: value.hours,
+                              label: Localization.get(lang, 'countdown_hours'),
+                            ),
+                            CountdownItemWidget(
+                              value: value.minutes,
+                              label: Localization.get(lang, 'countdown_minutes'),
+                            ),
+                            CountdownItemWidget(
+                              value: value.seconds,
+                              label: Localization.get(lang, 'countdown_seconds'),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),

@@ -1,8 +1,11 @@
 /// ============================================================
 /// GUEST GALLERY CONFIGURATION — Local Dashboard
 /// ============================================================
-/// Control whether and when guests can upload their wedding day
-/// photos and videos directly into your Google Drive folder.
+/// Control whether and when guests can share their wedding day
+/// photos and videos with you. Photos are collected through a
+/// Google Form (see lib/dashboard/links.dart -> guestPhotosFormUrl)
+/// which saves every upload directly into your Google Drive — no
+/// backend or database needed.
 /// ============================================================
 
 class GalleryConfig {
@@ -11,10 +14,7 @@ class GalleryConfig {
   /// Globally enable or disable this feature
   static const bool enableGuestGallery = true;
 
-  /// The exact date and time the Guest Gallery opens for uploads.
+  /// The exact date and time the Guest Gallery button becomes available.
   /// Format: DateTime(yyyy, MM, dd, HH, mm)
-  static final DateTime galleryOpenDate = DateTime(2026, 9, 15, 22, 0);
-
-  /// Your Google Drive Folder ID where uploaded files will be stored.
-  static const String googleDriveFolderId = "YOUR_GOOGLE_DRIVE_FOLDER_ID_HERE";
+  static final DateTime galleryOpenDate = DateTime(2026, 8, 23, 0, 0);
 }

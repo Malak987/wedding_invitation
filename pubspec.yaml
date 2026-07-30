@@ -37,9 +37,5 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/images/gallery/
-    - assets/images/couple/
-    - assets/images/icons/
-    - assets/images/backgrounds/
     - assets/music/
     - assets/images/video/
