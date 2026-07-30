@@ -23,8 +23,10 @@ class _LandingScreenState extends State<LandingScreen> {
   void initState() {
     super.initState();
 
-    // Preload audio service
-    Future.delayed(const Duration(milliseconds: 1000), () {
+    // Genuinely preload the audio source (fetch + decode) while the seal
+    // video is on screen, so playback starts immediately on tap instead of
+    // only then loading the file for the first time.
+    AppAudioService.instance.preload().then((_) {
       if (mounted) {
         setState(() {
           _audioLoaded = true;
@@ -67,7 +69,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
   void _onVideoFinished() {
     // Note: we intentionally do NOT reset _videoPlaying back to false here.
-    // Doing so used to make the invisible seal hotspot and the "اكسر الختم"
+    // Doing so used to make the invisible seal hotspot and the "Double Tap...!"
     // instruction text flash back on screen for a split second while the
     // parent's fade-to-white transition was still running, since both were
     // keyed off `_videoPlaying`. The screen is about to be torn down by the
@@ -106,7 +108,7 @@ class _LandingScreenState extends State<LandingScreen> {
                 cursor: _isFullyPreloaded ? SystemMouseCursors.click : SystemMouseCursors.wait,
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: _handleOpenInvitation,
+                  onDoubleTap: _handleOpenInvitation,
                   child: const SizedBox(width: 100, height: 100),
                 ),
               ),

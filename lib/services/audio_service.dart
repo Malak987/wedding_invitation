@@ -41,6 +41,19 @@ class AppAudioService extends ChangeNotifier {
     }
   }
 
+  /// Actually fetches and prepares the audio source ahead of time (called
+  /// while the intro video is still playing), so that by the time the
+  /// person taps to open the invitation, `play()` starts near-instantly
+  /// instead of only then fetching/decoding the file for the first time.
+  Future<void> preload() async {
+    if (!_isInitialized) await _init();
+    try {
+      await _player.setSource(AssetSource('music/wedding_music.mp3'));
+    } catch (e) {
+      debugPrint('Audio preload failed (will still play on demand): $e');
+    }
+  }
+
   /// Plays the background music with a smooth fade-in (approx 1000ms)
   Future<void> play() async {
     if (!_isInitialized) await _init();

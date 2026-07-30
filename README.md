@@ -58,7 +58,9 @@ flutter run -d chrome
 ### د) الصور
 - الصورة الرئيسية (خلفية أول قسم + البرواز القوسي): `assets/images/1.jpg`
 - صورة "زمان" في شريط المقارنة التفاعلي بقسم "قصتنا": `assets/images/story_young.png`
-- صورة "دلوقتي" في نفس الشريط + قسم الألبوم: `assets/images/story_now.jpg`
+- صورة "دلوقتي" في نفس الشريط + أول صورة في الألبوم: `assets/images/story_now.jpg`
+- باقي صور الألبوم: `assets/images/gallery_2.jpg`, `gallery_3.jpg`, `gallery_4.jpg`
+- شعار المصمم/المطور (يظهر في الفوتر + أيقونة المتصفح): `assets/images/dev_logo.png`
 - فيديو المقدمة (فتح الختم): `assets/images/video/s&m.mp4`
 
 استبدل نفس الأسماء بصورك دون تعديل أي كود.

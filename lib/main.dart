@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'services/config_manager.dart';
 import 'services/audio_service.dart';
 import 'widgets/landing_screen.dart';
-import 'widgets/transition_overlay.dart';
 import 'widgets/navbar.dart';
 import 'sections/hero_section.dart';
 import 'sections/story_section.dart';
@@ -79,8 +78,6 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
   final GlobalKey _scheduleKey = GlobalKey();
 
   bool _showLanding = true;
-  bool _isTransitioning = false;
-  bool _fadeOverlay = false;
 
   @override
   void initState() {
@@ -160,8 +157,8 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                   ),
                 ),
 
-              // 2. Floating Premium Navbar (only if invitation is opened and transition finished)
-              if (opened && !_isTransitioning)
+              // 2. Floating Premium Navbar (only once the invitation is opened)
+              if (opened)
                 Positioned(
                   top: 0,
                   left: 0,
@@ -186,44 +183,17 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                 Positioned.fill(
                   child: LandingScreen(
                     key: const ValueKey('landing_screen'),
-                    onCompleted: () async {
-                      // 1. Instantly trigger white glow cover
-                      setState(() {
-                        _isTransitioning = true;
-                        _fadeOverlay = true;
-                      });
-
-                      // 2. Open the dynamic invitation state globally
-                      // This instantly builds and mounts the website behind the scenes!
+                    onCompleted: () {
+                      // Immediate, single-frame handoff: the moment the seal video
+                      // finishes, open the invitation and remove the landing screen
+                      // in the same frame — no staged delays, no fade overlay, so
+                      // there is nothing in between for the eye to catch.
                       manager.openInvitation();
-
-                      // 3. Give 50ms for frame to paint, then trigger AnimatedOpacity fade-out
-                      await Future.delayed(const Duration(milliseconds: 50));
-                      if (mounted) {
-                        setState(() {
-                          _fadeOverlay = false; // Transition opacity from 1.0 to 0.0
-                        });
-                      }
-
-                      // 4. Wait for the fade duration (1400ms)
-                      await Future.delayed(const Duration(milliseconds: 1400));
-
-                      // 5. Cleanly unmount both overlay and landing screen from the tree
-                      if (mounted) {
-                        setState(() {
-                          _isTransitioning = false;
-                          _showLanding = false;
-                        });
-                      }
+                      setState(() {
+                        _showLanding = false;
+                      });
                     },
                   ),
-                ),
-
-              // 5. Cinematic Transition White Glow Dissolve Overlay (rendered at the very top of Stack)
-              if (_isTransitioning)
-                TransitionOverlay(
-                  isTransitioning: _fadeOverlay,
-                  duration: const Duration(milliseconds: 1400),
                 ),
             ],
           ),

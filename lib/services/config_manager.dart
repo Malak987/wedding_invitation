@@ -16,18 +16,17 @@ class AppConfigManager extends ChangeNotifier {
   // Fallback defaults
   String _brideName = 'ميرنا';
   String _groomName = 'سيف';
-  String _eventDate = '2026-08-22';
+  String _eventDate = '2026-08-23';
   String _eventTime = '7:00 مساءً';
-  String _eventDay = 'السبت';
-  String _venueName = 'قاعة الأفراح الملكية';
-  String _venueAddress = 'القاهرة، مصر';
+  String _eventDay = 'الأحد';
+  String _venueName = 'قاعة برادايس';
+  String _venueAddress = 'سوهاج ، مصر';
   String _storyText = 'بدأت قصتنا بلقاء بسيط تحول إلى حب حقيقي، وها نحن اليوم نبدأ فصلاً جديداً من حياتنا معاً، بإذن الله.';
-  String _countdownTarget = '2026-08-22T19:00:00';
+  String _countdownTarget = '2026-08-23T19:00:00';
   String _googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=26.569541148546833,31.70995890878019';
-  String _phoneNumber = '+201000000000';
-  String _whatsappNumber = '+201000000000';
-  String _instagramUrl = 'https://instagram.com';
-  String _facebookUrl = 'https://facebook.com';
+  String _phoneNumber = '+201142803143';
+  String _whatsappNumber = '+201142803143';
+  String _facebookUrl = 'https://www.facebook.com/profile.php?id=61591828140123';
 
   // Aesthetic Colors
   String _primaryColor = '0xFFC9A66B'; // Gold
@@ -106,7 +105,6 @@ class AppConfigManager extends ChangeNotifier {
   String get googleMapsUrl => _googleMapsUrl;
   String get phoneNumber => _phoneNumber;
   String get whatsappNumber => _whatsappNumber;
-  String get instagramUrl => _instagramUrl;
   String get facebookUrl => _facebookUrl;
 
   Color get primaryColor => Color(int.parse(_primaryColor));
@@ -156,7 +154,6 @@ class AppConfigManager extends ChangeNotifier {
         _googleMapsUrl = storage['googleMapsUrl'] ?? _googleMapsUrl;
         _phoneNumber = storage['phoneNumber'] ?? _phoneNumber;
         _whatsappNumber = storage['whatsappNumber'] ?? _whatsappNumber;
-        _instagramUrl = storage['instagramUrl'] ?? _instagramUrl;
         _facebookUrl = storage['facebookUrl'] ?? _facebookUrl;
 
         _primaryColor = storage['primaryColor'] ?? _primaryColor;
@@ -203,7 +200,6 @@ class AppConfigManager extends ChangeNotifier {
         storage['googleMapsUrl'] = _googleMapsUrl;
         storage['phoneNumber'] = _phoneNumber;
         storage['whatsappNumber'] = _whatsappNumber;
-        storage['instagramUrl'] = _instagramUrl;
         storage['facebookUrl'] = _facebookUrl;
 
         storage['primaryColor'] = _primaryColor;
@@ -247,7 +243,6 @@ class AppConfigManager extends ChangeNotifier {
     String? googleMapsUrl,
     String? phoneNumber,
     String? whatsappNumber,
-    String? instagramUrl,
     String? facebookUrl,
     String? primaryColor,
     String? secondaryColor,
@@ -276,7 +271,6 @@ class AppConfigManager extends ChangeNotifier {
     if (googleMapsUrl != null) _googleMapsUrl = googleMapsUrl;
     if (phoneNumber != null) _phoneNumber = phoneNumber;
     if (whatsappNumber != null) _whatsappNumber = whatsappNumber;
-    if (instagramUrl != null) _instagramUrl = instagramUrl;
     if (facebookUrl != null) _facebookUrl = facebookUrl;
 
     if (primaryColor != null) _primaryColor = primaryColor;

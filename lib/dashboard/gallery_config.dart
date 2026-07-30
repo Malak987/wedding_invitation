@@ -16,5 +16,5 @@ class GalleryConfig {
 
   /// The exact date and time the Guest Gallery button becomes available.
   /// Format: DateTime(yyyy, MM, dd, HH, mm)
-  static final DateTime galleryOpenDate = DateTime(2026, 8, 23, 0, 0);
+  static final DateTime galleryOpenDate = DateTime(2026, 8, 24, 0, 0);
 }

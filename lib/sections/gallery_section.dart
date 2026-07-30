@@ -15,10 +15,12 @@ class GallerySection extends StatefulWidget {
 }
 
 class _GallerySectionState extends State<GallerySection> {
-  // The couple's own two real photos, shown standalone (no slider here)
+  // The couple's real photos together
   final List<String> _galleryImages = [
-    'assets/images/story_young.png',
     'assets/images/story_now.jpg',
+    'assets/images/gallery_2.jpg',
+    'assets/images/gallery_3.jpg',
+    'assets/images/gallery_4.jpg',
   ];
 
   void _openLightbox(int initialIndex) {

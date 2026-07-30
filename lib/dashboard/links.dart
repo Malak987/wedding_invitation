@@ -1,9 +1,9 @@
 /// ============================================================
 /// LINKS — Local Dashboard
 /// ============================================================
-/// Note: WhatsApp, Google Maps, Instagram, and Facebook links are set in
+/// Note: WhatsApp, Google Maps, and Facebook links are set in
 /// `lib/services/config_manager.dart` (_whatsappNumber, _googleMapsUrl,
-/// _instagramUrl, _facebookUrl) — that's the single real source for those.
+/// _facebookUrl) — that's the single real source for those.
 /// This file only holds the guest photo-sharing form link below.
 
 class AppLinks {

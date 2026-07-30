@@ -39,9 +39,9 @@ class _InstructionWidgetState extends State<InstructionWidget> with SingleTicker
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Luxury Arabic Instruction text
+        // Luxury Instruction text
         Text(
-          "اكسر الختم",
+          "Double Tap...!",
           style: TextStyle(
             fontFamily: 'Cairo',
             fontSize: 15,

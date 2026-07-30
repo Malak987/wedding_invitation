@@ -18,7 +18,7 @@ class ThankYouSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: manager.secondaryColor,
+      color: Colors.black,
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.horizontalPadding(context),
         vertical: Responsive.value(
