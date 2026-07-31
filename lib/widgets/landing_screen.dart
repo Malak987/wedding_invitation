@@ -107,8 +107,12 @@ class _LandingScreenState extends State<LandingScreen> {
               child: MouseRegion(
                 cursor: _isFullyPreloaded ? SystemMouseCursors.click : SystemMouseCursors.wait,
                 child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onDoubleTap: _handleOpenInvitation,
+                  // Only hit-test (and therefore only allow the double tap) once
+                  // everything is actually preloaded. Before that, taps pass
+                  // straight through instead of silently doing nothing — which
+                  // is what made the site feel "stuck" during the first seconds.
+                  behavior: _isFullyPreloaded ? HitTestBehavior.opaque : HitTestBehavior.translucent,
+                  onDoubleTap: _isFullyPreloaded ? _handleOpenInvitation : null,
                   child: const SizedBox(width: 100, height: 100),
                 ),
               ),
@@ -116,13 +120,16 @@ class _LandingScreenState extends State<LandingScreen> {
           ),
 
         // 3. Elegant Bottom Instruction Overlay (Cairo font, champagne gold, low opacity)
+        // Shows a "preparing" spinner until the seal video + audio are truly
+        // ready, then switches to "Double Tap...!" — so the instruction on
+        // screen always matches what will actually happen if the visitor taps.
         if (!_videoPlaying)
-          const Positioned(
+          Positioned(
             bottom: 60,
             left: 0,
             right: 0,
             child: IgnorePointer(
-              child: InstructionWidget(),
+              child: InstructionWidget(isReady: _isFullyPreloaded),
             ),
           ),
       ],
