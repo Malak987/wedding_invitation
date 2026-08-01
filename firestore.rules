@@ -75,5 +75,31 @@ service cloud.firestore {
         && request.resource.data.message.size() <= 1000
         && request.resource.data.siteId.size() <= 80;
     }
+
+    // Public "how many people confirmed so far" counter used by the RSVP
+    // section. Only ever holds two numbers (never names/messages), so it's
+    // safe to read publicly. Writes are restricted to small bounded
+    // increments (matching the 1-5 guestCount range enforced above) so a
+    // client can never set an arbitrary total directly.
+    match /stats/attendance {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['totalGuests', 'totalResponses', 'updatedAt'])
+        && request.resource.data.totalGuests is int
+        && request.resource.data.totalGuests >= 0
+        && request.resource.data.totalGuests <= 5
+        && request.resource.data.totalResponses is int
+        && request.resource.data.totalResponses >= 0
+        && request.resource.data.totalResponses <= 1;
+      allow update: if request.resource.data.keys().hasOnly(['totalGuests', 'totalResponses', 'updatedAt'])
+        && request.resource.data.totalGuests is int
+        && request.resource.data.totalGuests >= 0
+        && request.resource.data.totalResponses is int
+        && request.resource.data.totalResponses >= 0
+        && (request.resource.data.totalGuests - resource.data.totalGuests) >= -5
+        && (request.resource.data.totalGuests - resource.data.totalGuests) <= 5
+        && (request.resource.data.totalResponses - resource.data.totalResponses) >= -1
+        && (request.resource.data.totalResponses - resource.data.totalResponses) <= 1;
+      allow delete: if false;
+    }
   }
 }

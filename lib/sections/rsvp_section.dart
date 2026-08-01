@@ -15,6 +15,17 @@ import '../services/rsvp_service.dart';
 import '../widgets/animated_button.dart';
 import '../widgets/section_title.dart';
 
+/// Theme-derived accent tones so "attending / declined / success" states
+/// always read as an extension of the site's gold + warm-brown palette,
+/// instead of clashing with plain Material green/red.
+Color _rsvpAttendColor(Color primary) => primary;
+
+Color _rsvpDeclineColor(Color secondary) => Color.lerp(secondary, const Color(0xFF9A3B2B), 0.55)!;
+
+Color _rsvpSuccessColor(Color secondary) => Color.lerp(secondary, const Color(0xFF3E6B4F), 0.5)!;
+
+Color _rsvpDeepShade(Color base) => Color.lerp(base, Colors.black, 0.55)!;
+
 class RsvpSection extends StatefulWidget {
   const RsvpSection({super.key});
 
@@ -63,7 +74,19 @@ class _RsvpSectionState extends State<RsvpSection> {
     final isAr = manager.selectedLanguage == 'ar';
 
     return Container(
-      color: manager.accentColor,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            manager.accentColor,
+            Color.lerp(manager.accentColor, manager.primaryColor, 0.08)!,
+          ],
+        ),
+        border: Border(
+          top: BorderSide(color: manager.primaryColor.withOpacity(0.25), width: 1),
+        ),
+      ),
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.horizontalPadding(context),
         vertical: Responsive.value(
@@ -83,7 +106,9 @@ class _RsvpSectionState extends State<RsvpSection> {
                     ? 'يسعدنا معرفة حضوركم لنجهز لكم أجمل استقبال'
                     : 'Let us know if you will join us so we can prepare beautifully.',
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: 14),
+              _ConfirmedGuestsCounter(isAr: isAr),
+              const SizedBox(height: 22),
               FadeIn(
                 child: _RsvpCallToActionCard(
                   isAr: isAr,
@@ -97,20 +122,70 @@ class _RsvpSectionState extends State<RsvpSection> {
                 child: _lastResult == null
                     ? const SizedBox.shrink()
                     : Padding(
-                        key: const ValueKey('notifications-card'),
-                        padding: const EdgeInsets.only(top: 22),
-                        child: _StayUpdatedCard(
-                          isAr: isAr,
-                          busy: _notificationBusy,
-                          result: _notificationResult,
-                          onEnable: _enableNotifications,
-                        ),
-                      ),
+                  key: const ValueKey('notifications-card'),
+                  padding: const EdgeInsets.only(top: 22),
+                  child: _StayUpdatedCard(
+                    isAr: isAr,
+                    busy: _notificationBusy,
+                    result: _notificationResult,
+                    onEnable: _enableNotifications,
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ConfirmedGuestsCounter extends StatelessWidget {
+  final bool isAr;
+
+  const _ConfirmedGuestsCounter({required this.isAr});
+
+  @override
+  Widget build(BuildContext context) {
+    final manager = AppConfigManager.instance;
+    final gold = manager.primaryColor;
+    final emerald = manager.secondaryColor;
+
+    return StreamBuilder<int>(
+      stream: RsvpService.instance.watchTotalConfirmedGuests(),
+      builder: (context, snapshot) {
+        final total = snapshot.data ?? 0;
+        if (total <= 0) return const SizedBox.shrink();
+
+        return AnimatedOpacity(
+          duration: const Duration(milliseconds: 400),
+          opacity: 1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+            decoration: BoxDecoration(
+              color: gold.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: gold.withOpacity(0.4)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.groups_rounded, size: 15, color: emerald),
+                const SizedBox(width: 8),
+                Text(
+                  isAr ? '$total من أحبائنا أكدوا الحضور حتى الآن' : '$total guests confirmed so far',
+                  style: TextStyle(
+                    fontFamily: manager.bodyFont,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: emerald,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -137,53 +212,95 @@ class _RsvpCallToActionCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(isMobile ? 24 : 34),
+          padding: EdgeInsets.fromLTRB(
+            isMobile ? 24 : 34,
+            isMobile ? 20 : 26,
+            isMobile ? 24 : 34,
+            isMobile ? 24 : 34,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(28),
             gradient: LinearGradient(
               colors: [
-                Colors.white.withOpacity(0.84),
-                manager.accentColor.withOpacity(0.72),
+                Colors.white.withOpacity(0.92),
+                Colors.white.withOpacity(0.78),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            border: Border.all(color: gold.withOpacity(0.46), width: 1.2),
+            border: Border.all(color: gold.withOpacity(0.4), width: 1),
             boxShadow: [
               BoxShadow(
-                color: emerald.withOpacity(0.16),
-                blurRadius: 34,
-                offset: const Offset(0, 16),
+                color: gold.withOpacity(0.18),
+                blurRadius: 30,
+                offset: const Offset(0, 14),
               ),
             ],
           ),
-          child: isMobile
-              ? Column(
-                  children: [
-                    _RsvpBadge(emerald: emerald, gold: gold),
-                    const SizedBox(height: 18),
-                    _RsvpCopy(isAr: isAr),
-                    const SizedBox(height: 22),
-                    AnimatedButton(
-                      label: isAr ? 'تأكيد الحضور' : 'Confirm Attendance',
-                      icon: Icons.check_circle_outline_rounded,
-                      onPressed: onPressed,
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    _RsvpBadge(emerald: emerald, gold: gold),
-                    const SizedBox(width: 24),
-                    Expanded(child: _RsvpCopy(isAr: isAr)),
-                    const SizedBox(width: 24),
-                    AnimatedButton(
-                      label: isAr ? 'تأكيد الحضور' : 'Confirm Attendance',
-                      icon: Icons.check_circle_outline_rounded,
-                      onPressed: onPressed,
-                    ),
-                  ],
-                ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _RsvpEyebrow(isAr: isAr, gold: gold, emerald: emerald),
+              SizedBox(height: isMobile ? 16 : 20),
+              isMobile
+                  ? Column(
+                children: [
+                  _RsvpBadge(emerald: emerald, gold: gold),
+                  const SizedBox(height: 18),
+                  _RsvpCopy(isAr: isAr),
+                  const SizedBox(height: 22),
+                  AnimatedButton(
+                    label: isAr ? 'تأكيد الحضور' : 'Confirm Attendance',
+                    icon: Icons.check_circle_outline_rounded,
+                    onPressed: onPressed,
+                  ),
+                ],
+              )
+                  : Row(
+                children: [
+                  _RsvpBadge(emerald: emerald, gold: gold),
+                  const SizedBox(width: 24),
+                  Expanded(child: _RsvpCopy(isAr: isAr)),
+                  const SizedBox(width: 24),
+                  AnimatedButton(
+                    label: isAr ? 'تأكيد الحضور' : 'Confirm Attendance',
+                    icon: Icons.check_circle_outline_rounded,
+                    onPressed: onPressed,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RsvpEyebrow extends StatelessWidget {
+  final bool isAr;
+  final Color gold;
+  final Color emerald;
+
+  const _RsvpEyebrow({required this.isAr, required this.gold, required this.emerald});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: gold.withOpacity(0.14),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: gold.withOpacity(0.5), width: 1),
+      ),
+      child: Text(
+        isAr ? 'دعوة خاصة' : 'A Personal Invitation',
+        style: TextStyle(
+          fontFamily: AppConfigManager.instance.bodyFont,
+          color: emerald,
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.4,
         ),
       ),
     );
@@ -201,15 +318,26 @@ class _RsvpBadge extends StatelessWidget {
     return Container(
       height: 78,
       width: 78,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(colors: [emerald, const Color(0xFF071D16)]),
-        border: Border.all(color: gold.withOpacity(0.75), width: 1.4),
-        boxShadow: [
-          BoxShadow(color: emerald.withOpacity(0.28), blurRadius: 24, offset: const Offset(0, 10)),
-        ],
+        border: Border.all(color: gold.withOpacity(0.35), width: 1),
       ),
-      child: Icon(Icons.favorite_rounded, color: gold, size: 34),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [emerald, _rsvpDeepShade(emerald)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: gold.withOpacity(0.75), width: 1.4),
+          boxShadow: [
+            BoxShadow(color: emerald.withOpacity(0.28), blurRadius: 20, offset: const Offset(0, 10)),
+          ],
+        ),
+        child: Icon(Icons.favorite_rounded, color: gold, size: 32),
+      ),
     );
   }
 }
@@ -271,14 +399,22 @@ class _StayUpdatedCard extends StatelessWidget {
     final emerald = manager.secondaryColor;
     final gold = manager.primaryColor;
     final success = result?.enabled == true;
+    final successColor = _rsvpSuccessColor(emerald);
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.78),
+        color: Colors.white.withOpacity(0.82),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: (success ? Colors.green : gold).withOpacity(0.35)),
+        border: Border.all(color: (success ? successColor : gold).withOpacity(0.4), width: success ? 1.2 : 1),
+        boxShadow: [
+          BoxShadow(
+            color: (success ? successColor : gold).withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,10 +424,13 @@ class _StayUpdatedCard extends StatelessWidget {
             width: 48,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: emerald.withOpacity(0.08),
-              border: Border.all(color: gold.withOpacity(0.35)),
+              color: (success ? successColor : emerald).withOpacity(0.1),
+              border: Border.all(color: (success ? successColor : gold).withOpacity(0.4)),
             ),
-            child: Icon(Icons.notifications_active_outlined, color: emerald),
+            child: Icon(
+              success ? Icons.notifications_active_rounded : Icons.notifications_active_outlined,
+              color: success ? successColor : emerald,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -325,7 +464,7 @@ class _StayUpdatedCard extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: manager.bodyFont,
                       fontSize: 12.5,
-                      color: success ? Colors.green.shade700 : Colors.orange.shade800,
+                      color: success ? successColor : _rsvpDeclineColor(emerald),
                     ),
                   ),
                 ],
@@ -337,10 +476,10 @@ class _StayUpdatedCard extends StatelessWidget {
             onPressed: busy || success ? null : onEnable,
             icon: busy
                 ? const SizedBox(
-                    height: 16,
-                    width: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
+              height: 16,
+              width: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
                 : Icon(success ? Icons.check_rounded : Icons.notifications_none_rounded, size: 18),
             label: Text(
               success
@@ -350,7 +489,7 @@ class _StayUpdatedCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: emerald,
               foregroundColor: Colors.white,
-              disabledBackgroundColor: success ? Colors.green.shade600 : emerald.withOpacity(0.45),
+              disabledBackgroundColor: success ? successColor : emerald.withOpacity(0.45),
               disabledForegroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -518,7 +657,7 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
                         selected: _status == AttendanceStatus.attending,
                         icon: Icons.check_circle_rounded,
                         label: isAr ? 'نعم، سأحضر' : "Yes, I'll attend",
-                        activeColor: Colors.green.shade700,
+                        activeColor: _rsvpAttendColor(gold),
                         onTap: () => setState(() => _status = AttendanceStatus.attending),
                       ),
                       const SizedBox(height: 10),
@@ -526,7 +665,7 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
                         selected: _status == AttendanceStatus.declined,
                         icon: Icons.cancel_rounded,
                         label: isAr ? 'آسف، لا أستطيع الحضور' : "Sorry, I can't attend",
-                        activeColor: Colors.redAccent.shade200,
+                        activeColor: _rsvpDeclineColor(emerald),
                         onTap: () => setState(() => _status = AttendanceStatus.declined),
                       ),
                       AnimatedSwitcher(
@@ -535,93 +674,93 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
                         child: _status == null
                             ? const SizedBox.shrink()
                             : Column(
-                                key: ValueKey(_status),
-                                children: [
-                                  const SizedBox(height: 18),
-                                  TextField(
-                                    controller: _nameController,
-                                    textInputAction: TextInputAction.next,
-                                    decoration: _inputDecoration(
-                                      context,
-                                      icon: Icons.person_outline_rounded,
-                                      hint: isAr ? 'اسمك *' : 'Your name *',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 14),
-                                  if (_status == AttendanceStatus.attending) ...[
-                                    Align(
-                                      alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
-                                      child: Text(
-                                        isAr ? 'كم عدد الحاضرين؟' : 'How many people will attend?',
-                                        style: TextStyle(
-                                          fontFamily: manager.bodyFont,
-                                          color: emerald,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    DropdownButtonFormField<int>(
-                                      value: _guestCount,
-                                      items: [1, 2, 3, 4, 5]
-                                          .map((count) => DropdownMenuItem<int>(
-                                                value: count,
-                                                child: Text(
-                                                  count == 1
-                                                      ? (isAr ? '1 - أنا فقط' : '1 - Me only')
-                                                      : (isAr
-                                                          ? '$count - أنا ومعي ${count - 1}'
-                                                          : '$count - Me + ${count - 1}'),
-                                                ),
-                                              ))
-                                          .toList(),
-                                      onChanged: (value) => setState(() => _guestCount = value ?? 1),
-                                      decoration: _inputDecoration(
-                                        context,
-                                        icon: Icons.groups_2_outlined,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Align(
-                                      alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
-                                      child: Text(
-                                        isAr
-                                            ? 'العدد يشملك أنت: 1 = أنت فقط، 2 = أنت وشخص آخر.'
-                                            : 'The count includes you: 1 = you only, 2 = you plus one guest.',
-                                        style: TextStyle(
-                                          fontFamily: manager.bodyFont,
-                                          fontSize: 12.5,
-                                          height: 1.45,
-                                          color: emerald.withOpacity(0.58),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 14),
-                                  ],
-                                  TextField(
-                                    controller: _messageController,
-                                    maxLines: 4,
-                                    maxLength: 500,
-                                    decoration: _inputDecoration(
-                                      context,
-                                      icon: Icons.mode_comment_outlined,
-                                      hint: _status == AttendanceStatus.attending
-                                          ? (isAr
-                                              ? 'اترك رسالة للعروسين... مثال: نتمنى لكم حياة سعيدة ❤️'
-                                              : 'Leave a message for the couple... Example: Wishing you a lifetime of happiness ❤️')
-                                          : (isAr
-                                              ? 'رسالة اختيارية... مثال: آسف لا أستطيع الحضور.'
-                                              : "Optional message... Example: Sorry I can't attend."),
-                                    ),
-                                  ),
-                                ],
+                          key: ValueKey(_status),
+                          children: [
+                            const SizedBox(height: 18),
+                            TextField(
+                              controller: _nameController,
+                              textInputAction: TextInputAction.next,
+                              decoration: _inputDecoration(
+                                context,
+                                icon: Icons.person_outline_rounded,
+                                hint: isAr ? 'اسمك *' : 'Your name *',
                               ),
+                            ),
+                            const SizedBox(height: 14),
+                            if (_status == AttendanceStatus.attending) ...[
+                              Align(
+                                alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
+                                child: Text(
+                                  isAr ? 'كم عدد الحاضرين؟' : 'How many people will attend?',
+                                  style: TextStyle(
+                                    fontFamily: manager.bodyFont,
+                                    color: emerald,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              DropdownButtonFormField<int>(
+                                value: _guestCount,
+                                items: [1, 2, 3, 4, 5]
+                                    .map((count) => DropdownMenuItem<int>(
+                                  value: count,
+                                  child: Text(
+                                    count == 1
+                                        ? (isAr ? '1 - أنا فقط' : '1 - Me only')
+                                        : (isAr
+                                        ? '$count - أنا ومعي ${count - 1}'
+                                        : '$count - Me + ${count - 1}'),
+                                  ),
+                                ))
+                                    .toList(),
+                                onChanged: (value) => setState(() => _guestCount = value ?? 1),
+                                decoration: _inputDecoration(
+                                  context,
+                                  icon: Icons.groups_2_outlined,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: isAr ? Alignment.centerRight : Alignment.centerLeft,
+                                child: Text(
+                                  isAr
+                                      ? 'العدد يشملك أنت: 1 = أنت فقط، 2 = أنت وشخص آخر.'
+                                      : 'The count includes you: 1 = you only, 2 = you plus one guest.',
+                                  style: TextStyle(
+                                    fontFamily: manager.bodyFont,
+                                    fontSize: 12.5,
+                                    height: 1.45,
+                                    color: emerald.withOpacity(0.58),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+                            TextField(
+                              controller: _messageController,
+                              maxLines: 4,
+                              maxLength: 500,
+                              decoration: _inputDecoration(
+                                context,
+                                icon: Icons.mode_comment_outlined,
+                                hint: _status == AttendanceStatus.attending
+                                    ? (isAr
+                                    ? 'اترك رسالة للعروسين... مثال: نتمنى لكم حياة سعيدة ❤️'
+                                    : 'Leave a message for the couple... Example: Wishing you a lifetime of happiness ❤️')
+                                    : (isAr
+                                    ? 'رسالة اختيارية... مثال: آسف لا أستطيع الحضور.'
+                                    : "Optional message... Example: Sorry I can't attend."),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       if (_error != null) ...[
                         const SizedBox(height: 10),
                         Text(
                           _error!,
-                          style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: _rsvpDeclineColor(emerald), fontWeight: FontWeight.w600),
                         ),
                       ],
                       const SizedBox(height: 22),
@@ -632,10 +771,10 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
                           onPressed: _saving ? null : _submit,
                           icon: _saving
                               ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                )
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
                               : const Icon(Icons.favorite_rounded),
                           label: Text(isAr ? 'إرسال الرد' : 'Submit RSVP'),
                           style: ElevatedButton.styleFrom(
@@ -675,9 +814,9 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
     final gold = manager.primaryColor;
 
     OutlineInputBorder border(Color color, [double width = 1]) => OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: color, width: width),
-        );
+      borderRadius: BorderRadius.circular(18),
+      borderSide: BorderSide(color: color, width: width),
+    );
 
     return InputDecoration(
       hintText: hint,
@@ -713,7 +852,7 @@ class _DialogHeader extends StatelessWidget {
           width: 56,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(colors: [emerald, const Color(0xFF061815)]),
+            gradient: LinearGradient(colors: [emerald, _rsvpDeepShade(emerald)]),
             border: Border.all(color: gold.withOpacity(0.8)),
           ),
           child: Icon(Icons.mail_outline_rounded, color: gold, size: 26),
@@ -880,9 +1019,11 @@ class _PremiumSuccessDialog extends StatelessWidget {
                       width: 86,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [Colors.green.shade600, emerald]),
+                        gradient: LinearGradient(colors: [_rsvpSuccessColor(emerald), emerald]),
                         border: Border.all(color: gold, width: 2),
-                        boxShadow: [BoxShadow(color: Colors.green.withOpacity(0.28), blurRadius: 24, offset: const Offset(0, 10))],
+                        boxShadow: [
+                          BoxShadow(color: _rsvpSuccessColor(emerald).withOpacity(0.28), blurRadius: 24, offset: const Offset(0, 10)),
+                        ],
                       ),
                       child: Icon(Icons.check_rounded, color: gold, size: 44),
                     ),

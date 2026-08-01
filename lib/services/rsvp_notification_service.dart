@@ -51,9 +51,41 @@ class RsvpNotificationService {
       }
 
       final vapidKey = AppLinks.fcmWebVapidKey.trim();
-      final token = await FirebaseMessaging.instance.getToken(
-        vapidKey: vapidKey.isEmpty ? null : vapidKey,
-      );
+      if (vapidKey.isEmpty) {
+        // Without a Web Push VAPID key the browser's push subscription call
+        // aborts (AbortError: Registration failed - push service error)
+        // before Firebase ever returns a token. Fail fast with a clear,
+        // actionable message instead of surfacing the raw browser error.
+        await RsvpService.instance.saveNotificationPreferences(
+          documentId: result.documentId,
+          fcmToken: null,
+          reminderSchedule: _buildReminderSchedule(),
+        );
+        return const NotificationEnableResult(
+          enabled: false,
+          message:
+          'Notifications are not configured yet for this device (missing Web Push VAPID key). Please contact the site owner.',
+        );
+      }
+
+      String? token;
+      try {
+        token = await FirebaseMessaging.instance.getToken(vapidKey: vapidKey);
+      } catch (_) {
+        // Browser could not create a push subscription (AbortError / push
+        // service error). This usually means the VAPID key doesn't match
+        // the Firebase project, or the site isn't served over HTTPS.
+        await RsvpService.instance.saveNotificationPreferences(
+          documentId: result.documentId,
+          fcmToken: null,
+          reminderSchedule: _buildReminderSchedule(),
+        );
+        return const NotificationEnableResult(
+          enabled: false,
+          message:
+          'This browser could not enable push notifications right now. Please try again later or use a different browser.',
+        );
+      }
 
       await RsvpService.instance.saveNotificationPreferences(
         documentId: result.documentId,
@@ -73,12 +105,16 @@ class RsvpNotificationService {
         message: 'Notifications are enabled for this device.',
       );
     } catch (e) {
-      return NotificationEnableResult(
+      return const NotificationEnableResult(
         enabled: false,
-        message: 'Could not enable notifications: $e',
+        message: 'Could not enable notifications on this device. Please try again.',
       );
     }
   }
+
+  /// How many hours before the event start the final reminder should fire.
+  /// Change this single number to adjust the timing.
+  static const int _finalReminderHoursBefore = 3;
 
   List<Map<String, dynamic>> _buildReminderSchedule() {
     final start = _eventStart(AppConfigManager.instance);
@@ -98,10 +134,10 @@ class RsvpNotificationService {
         'body': 'Today is the engagement day. See you soon!',
       },
       {
-        'type': 'one_hour_before',
-        'scheduledFor': Timestamp.fromDate(start.subtract(const Duration(hours: 1))),
+        'type': 'hours_before',
+        'scheduledFor': Timestamp.fromDate(start.subtract(Duration(hours: _finalReminderHoursBefore))),
         'title': 'Engagement Ceremony',
-        'body': 'The engagement ceremony starts in one hour.',
+        'body': 'The engagement ceremony starts in $_finalReminderHoursBefore hours.',
       },
     ];
   }

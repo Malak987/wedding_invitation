@@ -1,71 +1,74 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
+/// Small floating glass instruction card shown above the wax seal before the
+/// invitation is opened. Fades + gently floats in, then disappears the
+/// instant the seal is tapped (handled by the parent via [visible]).
 class InstructionWidget extends StatefulWidget {
   final bool isReady;
+  final bool visible;
 
-  const InstructionWidget({super.key, this.isReady = true});
+  const InstructionWidget({
+    super.key,
+    this.isReady = true,
+    this.visible = true,
+  });
 
   @override
   State<InstructionWidget> createState() => _InstructionWidgetState();
 }
 
-class _InstructionWidgetState extends State<InstructionWidget> with SingleTickerProviderStateMixin {
-  late final AnimationController _arrowController;
-  late final Animation<double> _arrowTranslation;
+class _InstructionWidgetState extends State<InstructionWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _floatController;
 
   @override
   void initState() {
     super.initState();
-    _arrowController = AnimationController(
+    // Very gentle continuous float — a few pixels, slow, never distracting.
+    _floatController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-
-    _arrowTranslation = Tween<double>(begin: -4.0, end: 4.0).animate(
-      CurvedAnimation(parent: _arrowController, curve: Curves.easeInOut),
-    );
-
-    _arrowController.repeat(reverse: true);
+      duration: const Duration(milliseconds: 2600),
+    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _arrowController.dispose();
+    _floatController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final goldColor = const Color(0xFFD4AF37);
+    const goldColor = Color(0xFFD4AF37);
+    const darkGreen = Color(0xFF2b100a);
 
-    // While the seal video / audio are still preloading, show a clear
-    // "preparing" state instead of an instruction that won't actually work
-    // yet if the visitor taps it — this is what was causing the "stuck /
-    // unresponsive" complaints during the first few seconds on the site.
+    // While assets are still preloading, show a minimal, honest "preparing"
+    // state instead of an instruction that would not respond to a tap yet.
     if (!widget.isReady) {
-      return AnimatedSwitcher(
+      return AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
+        opacity: widget.visible ? 1 : 0,
         child: Column(
-          key: const ValueKey('preparing'),
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 16,
-              height: 16,
+            const SizedBox(
+              width: 14,
+              height: 14,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(goldColor.withOpacity(0.85)),
+                valueColor: AlwaysStoppedAnimation<Color>(goldColor),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
-              "جاري التحضير...",
+              'جاري التحضير...',
               style: TextStyle(
                 fontFamily: 'Cairo',
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w400,
-                color: goldColor.withOpacity(0.7),
-                letterSpacing: 1.5,
+                color: goldColor.withOpacity(0.65),
+                letterSpacing: 1.2,
               ),
               textAlign: TextAlign.center,
             ),
@@ -74,47 +77,66 @@ class _InstructionWidgetState extends State<InstructionWidget> with SingleTicker
       );
     }
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: Column(
-        key: const ValueKey('ready'),
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Luxury Instruction text
-          Text(
-            "Double Tap...!",
-            style: TextStyle(
-              fontFamily: 'Cairo',
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: goldColor.withOpacity(0.85),
-              letterSpacing: 2.0,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 4,
-                ),
-              ],
+    return AnimatedOpacity(
+      // 150ms fade-out on tap, gentle fade-in otherwise.
+      duration: Duration(milliseconds: widget.visible ? 500 : 150),
+      curve: Curves.easeOut,
+      opacity: widget.visible ? 1 : 0,
+      child: AnimatedBuilder(
+        animation: _floatController,
+        builder: (context, child) {
+          final dy = -3.0 + (_floatController.value * 6.0); // gentle float, -3..+3 px
+          return Transform.translate(offset: Offset(0, dy), child: child);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: darkGreen.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: goldColor.withOpacity(0.55), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'اضغط على الختم لفتح الدعوة',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: goldColor,
+                      letterSpacing: 0.6,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Tap the wax seal to begin',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w300,
+                      color: goldColor.withOpacity(0.7),
+                      letterSpacing: 1.0,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-
-          // Elegant floating arrow
-          AnimatedBuilder(
-            animation: _arrowTranslation,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(0.0, _arrowTranslation.value),
-                child: Icon(
-                  Icons.keyboard_arrow_down_sharp,
-                  color: goldColor.withOpacity(0.7),
-                  size: 18,
-                ),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@
     "background_color": "#FFF9F3",
     "theme_color": "#C9A66B",
     "description": "الدعوة الرقمية لحفل خطوبة سيف وميرنا.",
+    "gcm_sender_id": "103953800507",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

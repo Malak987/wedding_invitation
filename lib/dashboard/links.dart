@@ -46,5 +46,5 @@ class AppLinks {
   /// certificates → Generate key pair, then paste the public key here.
   /// Leaving it empty keeps RSVP working; notifications will show a helpful
   /// setup message until the key is configured.
-  static const String fcmWebVapidKey = '';
+  static const String fcmWebVapidKey = 'BPyYcgGQBvRXuuE101V3JBeIJA7hi4PQFS2NmkGDm_owJ5-diO1fPu67aja884gD4bMH8c9_PLG7s5iSFzvtQp4';
 }
