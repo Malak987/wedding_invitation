@@ -53,7 +53,7 @@ class _LandingScreenState extends State<LandingScreen> {
     );
 
     precacheImage(
-      const AssetImage('assets/images/story_now.png'),
+      const AssetImage('assets/images/story_now.jpg'),
       context,
     );
   }

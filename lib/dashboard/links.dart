@@ -29,4 +29,22 @@ class AppLinks {
   ///    to jump straight to the Google Drive folder collecting everything.
   static const String guestPhotosFormUrl =
       'https://forms.google.com/PASTE_YOUR_FORM_LINK_HERE';
+
+  /// ----------------------------------------------------------
+  /// RSVP / Calendar / Notifications identifiers.
+  /// ----------------------------------------------------------
+  /// RSVP documents are saved in Firestore collection `guestResponses`.
+  /// The document ID is generated from `eventId + guestId`, so every guest
+  /// updates the same document if they submit again.
+  static const String eventId = 'engagement_001';
+
+  /// Public invitation URL used inside Google Calendar and ICS files.
+  static const String weddingWebsiteUrl = 'https://sofamirna-2026.web.app/';
+
+  /// Firebase Cloud Messaging Web Push certificate key.
+  /// Firebase Console → Project settings → Cloud Messaging → Web Push
+  /// certificates → Generate key pair, then paste the public key here.
+  /// Leaving it empty keeps RSVP working; notifications will show a helpful
+  /// setup message until the key is configured.
+  static const String fcmWebVapidKey = '';
 }

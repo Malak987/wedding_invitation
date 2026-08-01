@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'services/config_manager.dart';
 import 'services/audio_service.dart';
 import 'widgets/landing_screen.dart';
@@ -9,13 +11,15 @@ import 'sections/countdown_section.dart';
 import 'sections/gallery_section.dart';
 import 'sections/location_section.dart';
 import 'sections/schedule_section.dart';
+import 'sections/rsvp_section.dart';
 import 'sections/thank_you_section.dart';
 import 'sections/footer_section.dart';
 import 'sections/music_player.dart';
 import 'sections/guest_gallery_section.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const EngagementInvitationApp());
 }
 
@@ -150,6 +154,7 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                           KeyedSubtree(key: _venueKey, child: const LocationSection()),
                         if (manager.showSchedule)
                           KeyedSubtree(key: _scheduleKey, child: const ScheduleSection()),
+                        const RsvpSection(),
                         const ThankYouSection(),
                         const FooterSection(),
                       ],

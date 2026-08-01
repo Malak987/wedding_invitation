@@ -151,6 +151,18 @@
   })();
 </script>
 
+<script>
+  // Register Firebase Messaging SW. This is only for receiving FCM messages;
+  // RSVP saving still writes directly to Firestore from the Flutter client.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: '/firebase-cloud-messaging-push-scope',
+    }).catch(function (err) {
+      console.warn('Firebase messaging service worker registration failed:', err);
+    });
+  }
+</script>
+
 <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
