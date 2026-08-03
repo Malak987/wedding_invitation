@@ -3,7 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/config_manager.dart';
 import 'services/audio_service.dart';
+import 'services/tutorial_manager.dart';
 import 'widgets/landing_screen.dart';
+import 'widgets/lazy_mount.dart';
+import 'widgets/tutorial_overlay.dart';
 import 'widgets/navbar.dart';
 import 'sections/hero_section.dart';
 import 'sections/story_section.dart';
@@ -82,12 +85,19 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
   final GlobalKey _scheduleKey = GlobalKey();
 
   bool _showLanding = true;
+  bool _showTutorial = false;
 
   @override
   void initState() {
     super.initState();
     // Cache the opened state inside widget lifecycle
     _showLanding = !AppConfigManager.instance.isOpened;
+
+    // If the invitation was already opened in a previous session (or earlier
+    // this session) and the first-time tutorial hasn't been completed yet,
+    // show it as soon as we land straight on the main page.
+    _showTutorial = AppConfigManager.instance.isOpened &&
+        !TutorialManager.instance.hasCompleted;
 
     // If the visitor already opened the invitation earlier (saved in localStorage),
     // we can trigger background music to continue playing on first click/hover
@@ -144,19 +154,61 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                       children: [
                         HeroSection(onScrollToVenue: _scrollToVenue),
                         if (manager.showStory)
-                          KeyedSubtree(key: _storyKey, child: const StorySection()),
+                          KeyedSubtree(
+                            key: _storyKey,
+                            child: LazyMount(
+                              placeholderHeight: 500,
+                              builder: (_) => const StorySection(),
+                            ),
+                          ),
                         if (manager.showCountdown)
-                          KeyedSubtree(key: _countdownKey, child: const CountdownSection()),
+                          KeyedSubtree(
+                            key: _countdownKey,
+                            child: LazyMount(
+                              placeholderHeight: 360,
+                              builder: (_) => const CountdownSection(),
+                            ),
+                          ),
                         if (manager.showGallery)
-                          KeyedSubtree(key: _galleryKey, child: const GallerySection()),
-                        const GuestGallerySection(),
+                          KeyedSubtree(
+                            key: _galleryKey,
+                            child: LazyMount(
+                              placeholderHeight: 600,
+                              builder: (_) => const GallerySection(),
+                            ),
+                          ),
+                        LazyMount(
+                          placeholderHeight: 500,
+                          builder: (_) => const GuestGallerySection(),
+                        ),
                         if (manager.showLocation)
-                          KeyedSubtree(key: _venueKey, child: const LocationSection()),
+                          KeyedSubtree(
+                            key: _venueKey,
+                            child: LazyMount(
+                              placeholderHeight: 500,
+                              builder: (_) => const LocationSection(),
+                            ),
+                          ),
                         if (manager.showSchedule)
-                          KeyedSubtree(key: _scheduleKey, child: const ScheduleSection()),
-                        const RsvpSection(),
-                        const ThankYouSection(),
-                        const FooterSection(),
+                          KeyedSubtree(
+                            key: _scheduleKey,
+                            child: LazyMount(
+                              placeholderHeight: 500,
+                              builder: (_) => const ScheduleSection(),
+                            ),
+                          ),
+                        LazyMount(
+                          placeholderHeight: 700,
+                          builder: (_) => const RsvpSection(),
+                        ),
+                        LazyMount(
+                          placeholderHeight: 300,
+                          builder: (_) => const ThankYouSection(),
+                        ),
+                        LazyMount(
+                          placeholderHeight: 150,
+                          builder: (_) => const FooterSection(),
+                        ),
                       ],
                     ),
                   ),
@@ -196,9 +248,19 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                       manager.openInvitation();
                       setState(() {
                         _showLanding = false;
+                        _showTutorial = !TutorialManager.instance.hasCompleted;
                       });
                     },
                   ),
+                ),
+
+              // 5. First-time interactive tutorial — shown once, right after
+              // the invitation opens. Sits above everything, blurs/darkens
+              // and locks the site behind it until finished or skipped.
+              if (_showTutorial)
+                TutorialOverlay(
+                  key: const ValueKey('tutorial_overlay'),
+                  onFinished: () => setState(() => _showTutorial = false),
                 ),
             ],
           ),

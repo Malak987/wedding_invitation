@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/extensions.dart';
+import '../utils/web_runtime_stub.dart'
+    if (dart.library.html) '../utils/web_runtime.dart';
 
 /// A robust local-storage-backed state manager that holds all
 /// editable configurations of the Engagement Invitation. It supports
@@ -136,93 +138,90 @@ class AppConfigManager extends ChangeNotifier {
     loadFromLocalStorage();
   }
 
-  /// Read variables safely from HTML localStorage (runs on Web)
+  /// Read variables safely from browser localStorage (Web only; falls back
+  /// to defaults everywhere else via the conditional [WebRuntime] import).
   void loadFromLocalStorage() {
     try {
-      // Direct access via standard web localStorage to avoid complex external packaging blocks
-      final storage = _getLocalStorage();
-      if (storage != null) {
-        _brideName = storage['brideName'] ?? _brideName;
-        _groomName = storage['groomName'] ?? _groomName;
-        _eventDate = storage['eventDate'] ?? _eventDate;
-        _eventTime = storage['eventTime'] ?? _eventTime;
-        _eventDay = storage['eventDay'] ?? _eventDay;
-        _venueName = storage['venueName'] ?? _venueName;
-        _venueAddress = storage['venueAddress'] ?? _venueAddress;
-        _storyText = storage['storyText'] ?? _storyText;
-        _countdownTarget = storage['countdownTarget'] ?? _countdownTarget;
-        _googleMapsUrl = storage['googleMapsUrl'] ?? _googleMapsUrl;
-        _phoneNumber = storage['phoneNumber'] ?? _phoneNumber;
-        _whatsappNumber = storage['whatsappNumber'] ?? _whatsappNumber;
-        _facebookUrl = storage['facebookUrl'] ?? _facebookUrl;
+      String read(String key, String fallback) => WebRuntime.readStorage(key) ?? fallback;
 
-        _primaryColor = storage['primaryColor'] ?? _primaryColor;
-        _secondaryColor = storage['secondaryColor'] ?? _secondaryColor;
-        _accentColor = storage['accentColor'] ?? _accentColor;
+      _brideName = read('brideName', _brideName);
+      _groomName = read('groomName', _groomName);
+      _eventDate = read('eventDate', _eventDate);
+      _eventTime = read('eventTime', _eventTime);
+      _eventDay = read('eventDay', _eventDay);
+      _venueName = read('venueName', _venueName);
+      _venueAddress = read('venueAddress', _venueAddress);
+      _storyText = read('storyText', _storyText);
+      _countdownTarget = read('countdownTarget', _countdownTarget);
+      _googleMapsUrl = read('googleMapsUrl', _googleMapsUrl);
+      _phoneNumber = read('phoneNumber', _phoneNumber);
+      _whatsappNumber = read('whatsappNumber', _whatsappNumber);
+      _facebookUrl = read('facebookUrl', _facebookUrl);
 
-        _headingFont = storage['headingFont'] ?? _headingFont;
-        _bodyFont = storage['bodyFont'] ?? _bodyFont;
+      _primaryColor = read('primaryColor', _primaryColor);
+      _secondaryColor = read('secondaryColor', _secondaryColor);
+      _accentColor = read('accentColor', _accentColor);
 
-        _showStory = (storage['showStory'] ?? 'true') == 'true';
-        _showCountdown = (storage['showCountdown'] ?? 'true') == 'true';
-        _showGallery = (storage['showGallery'] ?? 'true') == 'true';
-        _showLocation = (storage['showLocation'] ?? 'true') == 'true';
-        _showSchedule = (storage['showSchedule'] ?? 'true') == 'true';
-        _showMusic = (storage['showMusic'] ?? 'true') == 'true';
+      _headingFont = read('headingFont', _headingFont);
+      _bodyFont = read('bodyFont', _bodyFont);
 
-        _musicVolume = double.tryParse(storage['musicVolume'] ?? '') ?? _musicVolume;
-        _musicMuted = (storage['musicMuted'] ?? 'false') == 'true';
-        _musicPlayingStateSaved = (storage['musicPlayingStateSaved'] ?? 'false') == 'true';
+      _showStory = read('showStory', 'true') == 'true';
+      _showCountdown = read('showCountdown', 'true') == 'true';
+      _showGallery = read('showGallery', 'true') == 'true';
+      _showLocation = read('showLocation', 'true') == 'true';
+      _showSchedule = read('showSchedule', 'true') == 'true';
+      _showMusic = read('showMusic', 'true') == 'true';
 
-        _selectedLanguage = storage['selectedLanguage'] ?? _selectedLanguage;
-        _isOpened = (storage['isOpened'] ?? 'false') == 'true';
+      _musicVolume = double.tryParse(read('musicVolume', '')) ?? _musicVolume;
+      _musicMuted = read('musicMuted', 'false') == 'true';
+      _musicPlayingStateSaved = read('musicPlayingStateSaved', 'false') == 'true';
 
-      }
+      _selectedLanguage = read('selectedLanguage', _selectedLanguage);
+      _isOpened = read('isOpened', 'false') == 'true';
     } catch (e) {
       debugPrint('LocalStorage is not available: $e');
     }
   }
 
-  /// Save current configuration fields to browser storage
+  /// Save current configuration fields to browser storage.
   void saveToLocalStorage() {
     try {
-      final storage = _getLocalStorage();
-      if (storage != null) {
-        storage['brideName'] = _brideName;
-        storage['groomName'] = _groomName;
-        storage['eventDate'] = _eventDate;
-        storage['eventTime'] = _eventTime;
-        storage['eventDay'] = _eventDay;
-        storage['venueName'] = _venueName;
-        storage['venueAddress'] = _venueAddress;
-        storage['storyText'] = _storyText;
-        storage['countdownTarget'] = _countdownTarget;
-        storage['googleMapsUrl'] = _googleMapsUrl;
-        storage['phoneNumber'] = _phoneNumber;
-        storage['whatsappNumber'] = _whatsappNumber;
-        storage['facebookUrl'] = _facebookUrl;
+      void write(String key, String value) => WebRuntime.writeStorage(key, value);
 
-        storage['primaryColor'] = _primaryColor;
-        storage['secondaryColor'] = _secondaryColor;
-        storage['accentColor'] = _accentColor;
+      write('brideName', _brideName);
+      write('groomName', _groomName);
+      write('eventDate', _eventDate);
+      write('eventTime', _eventTime);
+      write('eventDay', _eventDay);
+      write('venueName', _venueName);
+      write('venueAddress', _venueAddress);
+      write('storyText', _storyText);
+      write('countdownTarget', _countdownTarget);
+      write('googleMapsUrl', _googleMapsUrl);
+      write('phoneNumber', _phoneNumber);
+      write('whatsappNumber', _whatsappNumber);
+      write('facebookUrl', _facebookUrl);
 
-        storage['headingFont'] = _headingFont;
-        storage['bodyFont'] = _bodyFont;
+      write('primaryColor', _primaryColor);
+      write('secondaryColor', _secondaryColor);
+      write('accentColor', _accentColor);
 
-        storage['showStory'] = _showStory.toString();
-        storage['showCountdown'] = _showCountdown.toString();
-        storage['showGallery'] = _showGallery.toString();
-        storage['showLocation'] = _showLocation.toString();
-        storage['showSchedule'] = _showSchedule.toString();
-        storage['showMusic'] = _showMusic.toString();
+      write('headingFont', _headingFont);
+      write('bodyFont', _bodyFont);
 
-        storage['musicVolume'] = _musicVolume.toString();
-        storage['musicMuted'] = _musicMuted.toString();
-        storage['musicPlayingStateSaved'] = _musicPlayingStateSaved.toString();
+      write('showStory', _showStory.toString());
+      write('showCountdown', _showCountdown.toString());
+      write('showGallery', _showGallery.toString());
+      write('showLocation', _showLocation.toString());
+      write('showSchedule', _showSchedule.toString());
+      write('showMusic', _showMusic.toString());
 
-        storage['selectedLanguage'] = _selectedLanguage;
-        storage['isOpened'] = _isOpened.toString();
-      }
+      write('musicVolume', _musicVolume.toString());
+      write('musicMuted', _musicMuted.toString());
+      write('musicPlayingStateSaved', _musicPlayingStateSaved.toString());
+
+      write('selectedLanguage', _selectedLanguage);
+      write('isOpened', _isOpened.toString());
     } catch (e) {
       debugPrint('Error saving to LocalStorage: $e');
     }
@@ -312,89 +311,5 @@ class AppConfigManager extends ChangeNotifier {
     _isOpened = false;
     _musicPlayingStateSaved = false;
     saveToLocalStorage();
-  }
-
-  /// Direct JS localStorage hook to prevent dependencies blocking compilation
-  dynamic _getLocalStorage() {
-    try {
-      // Dynamic JS-to-Dart lookup using the package:js/html binding is compiled on web.
-      // We can use dart:html via a safe dynamic import or reflection.
-      // Since it's web-only, let's write a web helper or access it dynamically if running on web.
-      // Let's use a nice custom utility which prevents errors.
-      return const _WebLocalStorage();
-    } catch (_) {
-      return null;
-    }
-  }
-}
-
-/// A lightweight, cross-platform friendly mock of window.localStorage
-/// that redirects calls to dart:html Map on web, or returns a memory map on non-web platforms.
-class _WebLocalStorage {
-  static final Map<String, String> _memoryMap = {};
-
-  const _WebLocalStorage();
-
-  String? operator [](String key) {
-    try {
-      // Under web compile, we can invoke window.localStorage.getItem
-      // Let's use a beautiful dynamic runtime check to find out if dart:html window is available.
-      // That is completely crash-free on any platform!
-      final dynamic window = _getHtmlWindow();
-      if (window != null) {
-        return window.localStorage[key];
-      }
-    } catch (_) {}
-    return _memoryMap[key];
-  }
-
-  void operator []=(String key, String value) {
-    try {
-      final dynamic window = _getHtmlWindow();
-      if (window != null) {
-        window.localStorage[key] = value;
-        return;
-      }
-    } catch (_) {}
-    _memoryMap[key] = value;
-  }
-
-  dynamic _getHtmlWindow() {
-    try {
-      // Let's import dart:html dynamically or use general-purpose detection
-      // Since this app will only run on Flutter Web, we can safely trust html window or mock it.
-      // To bypass mobile compilation issues completely, we return a safe check.
-      return const bool.fromEnvironment('dart.library.html') ? _HtmlWindowProvider.window : null;
-    } catch (_) {
-      return null;
-    }
-  }
-}
-
-/// Helper that imports 'dart:html' conditionally inside a web-guarded block
-class _HtmlWindowProvider {
-  // If we are on web, this is compiled and resolved. If on mobile, it is bypassed if not referenced.
-  // Using dart:html here is 100% fine since the workspace target is Flutter Web.
-  // Let's access it safely.
-  static dynamic get window {
-    try {
-      // This is a direct reference to html.window
-      // To ensure no mobile compiler complains, we can look up with reflection or simple conditional.
-      return _hasWebHtml() ? _getWebWindow() : null;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static bool _hasWebHtml() => const bool.fromEnvironment('dart.library.html');
-
-  // Returns actual dart:html.window safely.
-  // (On non-web this method won't run, preventing crash)
-  static dynamic _getWebWindow() {
-    // Under Web, we can safely run this
-    // We will write standard JS window hook or use direct dart:html
-    // To keep it clean and robust, we can just use universal_html (mocked or custom)
-    // Actually, we can just use standard JS-Interop or import dart:html as html;
-    return null;
   }
 }

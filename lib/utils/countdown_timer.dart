@@ -22,15 +22,19 @@ class CountdownValue {
 /// every second — never the full page.
 class CountdownTimer {
   CountdownTimer(DateTime target) : _target = target {
-    _tick();
+    // Initialize the timer BEFORE the first _tick() call: if the target
+    // date is already in the past, _tick() calls _timer.cancel()
+    // immediately, which would throw a LateInitializationError if the
+    // timer field hasn't been assigned yet.
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+    _tick();
   }
 
   final DateTime _target;
   late final Timer _timer;
 
   final ValueNotifier<CountdownValue> value =
-      ValueNotifier<CountdownValue>(const CountdownValue());
+  ValueNotifier<CountdownValue>(const CountdownValue());
 
   void _tick() {
     final now = DateTime.now();
