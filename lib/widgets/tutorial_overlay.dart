@@ -176,11 +176,15 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                           onPageChanged: (i) => setState(() => _page = i),
                           itemBuilder: (context, index) {
                             final step = _all[index];
-                            final isEdge = index == 0 || index == _all.length - 1;
+                            // Only the closing, purely celebratory screen
+                            // (no imageAsset) uses the big icon layout.
+                            // Every other step — including the very first
+                            // one — always leads with a real screenshot.
+                            final large = step.imageAsset == null;
                             return _TutorialPage(
                               step: step,
                               isArabic: _isArabic,
-                              large: isEdge,
+                              large: large,
                             );
                           },
                         ),
@@ -373,13 +377,13 @@ class _ScreenshotFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     final screen = MediaQuery.of(context).size;
+    final screen = MediaQuery.of(context).size;
     return Container(
       constraints: BoxConstraints(
         maxWidth: screen.width > 900
-            ? 850
-            : screen.width * 0.92,
-        maxHeight: screen.height * 0.62,
+            ? 920
+            : screen.width * 0.94,
+        maxHeight: screen.height * 0.7,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
@@ -396,10 +400,10 @@ class _ScreenshotFrame extends StatelessWidget {
       child: imageAsset == null
           ? _GlowIcon(icon: icon, size: 64)
           : Image.asset(
-              imageAsset!,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => _GlowIcon(icon: icon, size: 64),
-            ),
+        imageAsset!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => _GlowIcon(icon: icon, size: 64),
+      ),
     );
   }
 }
