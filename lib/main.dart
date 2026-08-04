@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
+import 'cubit/rsvp_stats_cubit.dart';
 import 'services/config_manager.dart';
 import 'services/audio_service.dart';
 import 'services/tutorial_manager.dart';
@@ -16,6 +18,7 @@ import 'sections/location_section.dart';
 import 'sections/schedule_section.dart';
 import 'sections/rsvp_section.dart';
 import 'sections/thank_you_section.dart';
+import 'dashboard/rsvp_dashboard.dart';
 import 'sections/footer_section.dart';
 import 'sections/music_player.dart';
 import 'sections/guest_gallery_section.dart';
@@ -59,7 +62,14 @@ class EngagementInvitationApp extends StatelessWidget {
               child: child!,
             );
           },
-          home: const InvitationHomePage(),
+          home: BlocProvider<RsvpStatsCubit>(
+            // The cubit starts ONE Firestore snapshot listener on first
+            // access and recomputes every dashboard stat on each change.
+            // Created once at the app root so the dashboard and the public
+            // RSVP counter share a single (broadcast) subscription.
+            create: (_) => RsvpStatsCubit()..start(),
+            child: const InvitationHomePage(),
+          ),
         );
       },
     );
@@ -200,6 +210,12 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                         LazyMount(
                           placeholderHeight: 700,
                           builder: (_) => const RsvpSection(),
+                        ),
+                        // Live attendance dashboard — every figure is computed
+                        // dynamically by RsvpStatsCubit from guestResponses.
+                        LazyMount(
+                          placeholderHeight: 500,
+                          builder: (_) => const RsvpDashboardSection(),
                         ),
                         LazyMount(
                           placeholderHeight: 300,

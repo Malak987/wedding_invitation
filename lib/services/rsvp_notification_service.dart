@@ -3,8 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../dashboard/links.dart';
 import '../models/rsvp_response.dart';
+import '../repository/rsvp_repository.dart';
 import 'config_manager.dart';
-import 'rsvp_service.dart';
 
 class NotificationEnableResult {
   final bool enabled;
@@ -39,7 +39,7 @@ class RsvpNotificationService {
           settings.authorizationStatus == AuthorizationStatus.provisional;
 
       if (!allowed) {
-        await RsvpService.instance.saveNotificationPreferences(
+        await RsvpRepository.instance.saveNotificationPreferences(
           documentId: result.documentId,
           fcmToken: null,
           reminderSchedule: _buildReminderSchedule(),
@@ -56,7 +56,7 @@ class RsvpNotificationService {
         // aborts (AbortError: Registration failed - push service error)
         // before Firebase ever returns a token. Fail fast with a clear,
         // actionable message instead of surfacing the raw browser error.
-        await RsvpService.instance.saveNotificationPreferences(
+        await RsvpRepository.instance.saveNotificationPreferences(
           documentId: result.documentId,
           fcmToken: null,
           reminderSchedule: _buildReminderSchedule(),
@@ -75,7 +75,7 @@ class RsvpNotificationService {
         // Browser could not create a push subscription (AbortError / push
         // service error). This usually means the VAPID key doesn't match
         // the Firebase project, or the site isn't served over HTTPS.
-        await RsvpService.instance.saveNotificationPreferences(
+        await RsvpRepository.instance.saveNotificationPreferences(
           documentId: result.documentId,
           fcmToken: null,
           reminderSchedule: _buildReminderSchedule(),
@@ -87,7 +87,7 @@ class RsvpNotificationService {
         );
       }
 
-      await RsvpService.instance.saveNotificationPreferences(
+      await RsvpRepository.instance.saveNotificationPreferences(
         documentId: result.documentId,
         fcmToken: token,
         reminderSchedule: _buildReminderSchedule(),

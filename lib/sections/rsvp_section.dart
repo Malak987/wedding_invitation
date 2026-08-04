@@ -1,17 +1,20 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../animations/fade_in.dart';
 import '../core/constants.dart';
 import '../core/responsive.dart';
+import '../cubit/rsvp_stats_cubit.dart';
+import '../cubit/rsvp_stats_state.dart';
 import '../dashboard/links.dart';
 import '../models/rsvp_response.dart';
+import '../repository/rsvp_repository.dart';
 import '../services/calendar_service.dart';
 import '../services/config_manager.dart';
 import '../services/rsvp_identity_service.dart';
 import '../services/rsvp_notification_service.dart';
-import '../services/rsvp_service.dart';
 import '../widgets/animated_button.dart';
 import '../widgets/section_title.dart';
 
@@ -151,10 +154,11 @@ class _ConfirmedGuestsCounter extends StatelessWidget {
     final gold = manager.primaryColor;
     final emerald = manager.secondaryColor;
 
-    return StreamBuilder<int>(
-      stream: RsvpService.instance.watchTotalConfirmedGuests(),
-      builder: (context, snapshot) {
-        final total = snapshot.data ?? 0;
+    // Reads from RsvpStatsCubit, which derives totalAttendees live from the
+    // normalized guestResponses collection (no stored counter to desync).
+    return BlocBuilder<RsvpStatsCubit, RsvpStatsState>(
+      builder: (context, state) {
+        final total = state.totalAttendees;
         if (total <= 0) return const SizedBox.shrink();
 
         return AnimatedOpacity(
@@ -589,7 +593,7 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
         deviceId: identity.deviceId,
       );
 
-      final result = await RsvpService.instance.saveResponse(response);
+      final result = await RsvpRepository.instance.saveResponse(response);
       if (!mounted) return;
       Navigator.of(context).pop(result);
     } catch (e) {

@@ -31,30 +31,8 @@ class RsvpIdentityService {
   static const _deviceStorageKey = 'engagement_rsvp_device_id';
   static const _guestStorageKey = 'engagement_rsvp_guest_id';
   static const _guestNameStorageKey = 'engagement_rsvp_guest_name';
-  static const _lastContributionPrefix = 'engagement_rsvp_last_contribution_';
 
   final Random _random = Random.secure();
-
-  /// The head-count this guest last successfully contributed to the running
-  /// attendance total for [eventId] (0 if declined or never submitted).
-  /// Returns null if this guest has never submitted before, so the caller
-  /// can tell "first submission" apart from "resubmission with 0 people".
-  int? getLastKnownContribution({required String eventId, required String guestId}) {
-    final raw = WebRuntime.readStorage(_lastContributionKey(eventId, guestId));
-    if (raw == null) return null;
-    return int.tryParse(raw);
-  }
-
-  void saveLastKnownContribution({
-    required String eventId,
-    required String guestId,
-    required int contribution,
-  }) {
-    WebRuntime.writeStorage(_lastContributionKey(eventId, guestId), contribution.toString());
-  }
-
-  String _lastContributionKey(String eventId, String guestId) =>
-      '$_lastContributionPrefix${eventId}_$guestId';
 
   void saveGuestName(String guestName) {
     final cleanName = guestName.trim();
