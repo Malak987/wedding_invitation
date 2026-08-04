@@ -177,7 +177,15 @@ class AppConfigManager extends ChangeNotifier {
       _musicPlayingStateSaved = read('musicPlayingStateSaved', 'false') == 'true';
 
       _selectedLanguage = read('selectedLanguage', _selectedLanguage);
-      _isOpened = read('isOpened', 'false') == 'true';
+      // ملحوظة مهمة: `isOpened` متتقريش من التخزين عمداً.
+      // كل زيارة/Refresh لازم يبدأ بشاشة الافتتاح عشان فيديو المقدمة
+      // يظهر في كل مرة. القيمة بتتغير لـ true في الذاكرة فقط بعد ما
+      // الضيف يدوس على الختم ويكمل الفيديو.
+      // Important: `isOpened` is intentionally NOT restored from storage.
+      // Every fresh visit/reload must start on the landing screen so the
+      // intro video plays every time — it flips to true in memory only,
+      // after the guest taps the wax seal and the video finishes.
+      _isOpened = false;
     } catch (e) {
       debugPrint('LocalStorage is not available: $e');
     }
@@ -221,7 +229,8 @@ class AppConfigManager extends ChangeNotifier {
       write('musicPlayingStateSaved', _musicPlayingStateSaved.toString());
 
       write('selectedLanguage', _selectedLanguage);
-      write('isOpened', _isOpened.toString());
+      // `isOpened` is no longer persisted: it is runtime-only state so
+      // the intro video plays on every visit (see loadFromLocalStorage).
     } catch (e) {
       debugPrint('Error saving to LocalStorage: $e');
     }
