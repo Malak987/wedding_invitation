@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
 import 'cubit/rsvp_stats_cubit.dart';
 import 'services/config_manager.dart';
-import 'services/audio_service.dart';
 import 'services/tutorial_manager.dart';
 import 'widgets/landing_screen.dart';
 import 'widgets/lazy_mount.dart';
@@ -100,23 +99,14 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
   @override
   void initState() {
     super.initState();
-    // Cache the opened state inside widget lifecycle
-    _showLanding = !AppConfigManager.instance.isOpened;
+    // Every visit/reload starts on the landing screen so the intro video
+    // plays every time — `isOpened` is never restored from storage.
+    _showLanding = true;
 
-    // If the invitation was already opened in a previous session (or earlier
-    // this session) and the first-time tutorial hasn't been completed yet,
-    // show it as soon as we land straight on the main page.
-    _showTutorial = AppConfigManager.instance.isOpened &&
-        !TutorialManager.instance.hasCompleted;
-
-    // If the visitor already opened the invitation earlier (saved in localStorage),
-    // we can trigger background music to continue playing on first click/hover
-    if (AppConfigManager.instance.isOpened && AppConfigManager.instance.musicPlayingStateSaved) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        // Attempt to play, caught gracefully by browser autoplay checker
-        AppAudioService.instance.play();
-      });
-    }
+    // The tutorial can only appear after the invitation is opened, which
+    // (per the landing flow above) always happens via LandingScreen's
+    // onCompleted callback — so nothing to do here on startup.
+    _showTutorial = false;
   }
 
   void _scrollToSection(GlobalKey key) {
