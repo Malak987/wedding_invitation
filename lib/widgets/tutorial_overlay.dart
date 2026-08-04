@@ -128,20 +128,25 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _entrance,
-      builder: (context, child) {
-        final t = Curves.easeOutBack.transform(_entrance.value.clamp(0, 1));
-        final fade = Curves.easeOut.transform(_entrance.value.clamp(0, 1));
-        return Opacity(
-          opacity: fade,
-          child: Transform.scale(
-            scale: 0.92 + (0.08 * t),
-            child: child,
-          ),
-        );
-      },
-      child: Positioned.fill(
+    // Positioned.fill MUST be the outermost widget here: this overlay is
+    // meant to be placed directly inside a parent Stack (see class doc).
+    // The animated scale/fade must live *inside* it, not wrap it, otherwise
+    // Positioned ends up with Transform as its direct parent instead of
+    // Stack and Flutter throws an incompatible ParentData error.
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: _entrance,
+        builder: (context, child) {
+          final t = Curves.easeOutBack.transform(_entrance.value.clamp(0, 1));
+          final fade = Curves.easeOut.transform(_entrance.value.clamp(0, 1));
+          return Opacity(
+            opacity: fade,
+            child: Transform.scale(
+              scale: 0.92 + (0.08 * t),
+              child: child,
+            ),
+          );
+        },
         child: KeyboardListener(
           focusNode: _focusNode,
           autofocus: true,
