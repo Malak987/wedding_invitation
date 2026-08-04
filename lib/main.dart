@@ -203,10 +203,7 @@ class _InvitationHomePageState extends State<InvitationHomePage> {
                         ),
                         // Live attendance dashboard — every figure is computed
                         // dynamically by RsvpStatsCubit from guestResponses.
-                        LazyMount(
-                          placeholderHeight: 500,
-                          builder: (_) => const RsvpDashboardSection(),
-                        ),
+
                         LazyMount(
                           placeholderHeight: 300,
                           builder: (_) => const ThankYouSection(),
