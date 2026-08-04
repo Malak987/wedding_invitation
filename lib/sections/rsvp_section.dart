@@ -213,7 +213,7 @@ class _RsvpCallToActionCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.fromLTRB(
@@ -622,7 +622,7 @@ class _PremiumRsvpDialogState extends State<_PremiumRsvpDialog> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(32),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(32),
@@ -997,7 +997,7 @@ class _PremiumSuccessDialog extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(34),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
               padding: const EdgeInsets.fromLTRB(28, 34, 28, 24),
               decoration: BoxDecoration(

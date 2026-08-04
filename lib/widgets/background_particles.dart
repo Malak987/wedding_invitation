@@ -104,14 +104,19 @@ class _BackgroundParticlesState extends State<BackgroundParticles>
         animation: _controller,
         builder: (context, _) {
           final manager = AppConfigManager.instance;
-          return CustomPaint(
-            painter: _PremiumParticlePainter(
-              _particles,
-              _controller.value,
-              manager.primaryColor,
-              widget.animateOnlyDownward,
+          // RepaintBoundary: the particles repaint every frame by design —
+          // isolating them in their own layer stops that repaint from
+          // dirtying the layers behind them (hero photo, blur, gradients).
+          return RepaintBoundary(
+            child: CustomPaint(
+              painter: _PremiumParticlePainter(
+                _particles,
+                _controller.value,
+                manager.primaryColor,
+                widget.animateOnlyDownward,
+              ),
+              size: Size.infinite,
             ),
-            size: Size.infinite,
           );
         },
       ),
