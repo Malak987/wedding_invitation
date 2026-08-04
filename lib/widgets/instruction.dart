@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// Small floating glass instruction card shown above the wax seal before the
@@ -90,12 +89,14 @@ class _InstructionWidgetState extends State<InstructionWidget>
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(18),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
+          // No live BackdropFilter: the card background is 85% opaque dark
+          // green, so a real-time blur of the playing video underneath was
+          // invisible yet re-rasterized on every video frame. Dropping it
+          // removes the per-frame cost with zero visual difference.
+          child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                color: darkGreen.withOpacity(0.85),
+                color: darkGreen.withOpacity(0.88),
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: goldColor.withOpacity(0.55), width: 1),
                 boxShadow: [
@@ -135,7 +136,6 @@ class _InstructionWidgetState extends State<InstructionWidget>
                 ],
               ),
             ),
-          ),
         ),
       ),
     );

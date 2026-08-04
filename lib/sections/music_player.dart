@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/audio_service.dart';
 import '../services/config_manager.dart';
@@ -42,14 +41,16 @@ class _MusicControllerState extends State<MusicController> {
                 duration: const Duration(milliseconds: 200),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: AnimatedContainer(
+                  // No live BackdropFilter here: this button floats above the
+                  // scrolling site the whole time, so a real-time blur would
+                  // re-rasterize on every scroll frame. A raised solid tint
+                  // looks the same over the cream background at zero cost.
+                  child: AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(_hovering ? 0.35 : 0.15),
+                        color: Colors.white.withOpacity(_hovering ? 0.7 : 0.5),
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
                           color: goldColor.withOpacity(_hovering ? 0.9 : 0.45),
@@ -89,7 +90,6 @@ class _MusicControllerState extends State<MusicController> {
                 ),
               ),
             ),
-          ),
         );
       },
     );

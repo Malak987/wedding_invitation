@@ -37,23 +37,28 @@ class HeroSection extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Soft, heavily blurred backdrop built from the couple's own photo
+            // Soft, blurred backdrop built from the couple's own photo.
+            // RepaintBoundary keeps this static filtered layer cached so the
+            // particles animating above never force it to re-rasterize.
+            // sigma 18 (was 28): identical under the dark vignette, much cheaper.
             Positioned.fill(
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-                child: Image.asset(
-                  bgAsset,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          manager.secondaryColor.withOpacity(0.95),
-                          manager.secondaryColor.withOpacity(0.85),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+              child: RepaintBoundary(
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Image.asset(
+                    bgAsset,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            manager.secondaryColor.withOpacity(0.95),
+                            manager.secondaryColor.withOpacity(0.85),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
                     ),
                   ),
